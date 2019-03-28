@@ -1,6 +1,18 @@
 apply plugin: 'com.android.application'
 
+def debugKeystoreProperties = new Properties()
+debugKeystoreProperties.load(new FileInputStream(rootProject.file("debug_keystore.properties")))
+
 android {
+    signingConfigs {
+        debug_config {
+            keyAlias debugKeystoreProperties['keyAlias']
+            keyPassword debugKeystoreProperties['keyPassword']
+            storeFile file(debugKeystoreProperties['storeFile'])
+            storePassword debugKeystoreProperties['storePassword']
+        }
+    }
+
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.simonk.projects.taskmanager"
@@ -11,6 +23,9 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug_config
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
