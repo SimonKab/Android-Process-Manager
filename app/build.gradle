@@ -1,20 +1,58 @@
 apply plugin: 'com.android.application'
 
+def getVersion(){
+    def cmd = 'git describe --tags'
+    Process process = cmd.execute()
+    String[] descriptionInfo = process.in.text.split('-')
+    if (descriptionInfo.length == 1) {
+        descriptionInfo[0] = descriptionInfo[0].replace('\n', '')
+        return descriptionInfo[0]+"."+0
+    }
+    return descriptionInfo[0] + "." + descriptionInfo[1]
+}
+
+def debugKeystoreProperties = new Properties()
+debugKeystoreProperties.load(new FileInputStream(rootProject.file("debug_keystore.properties")))
+
 android {
+    signingConfigs {
+        debug_config {
+            keyAlias debugKeystoreProperties['keyAlias']
+            keyPassword debugKeystoreProperties['keyPassword']
+            storeFile file(debugKeystoreProperties['storeFile'])
+            storePassword debugKeystoreProperties['storePassword']
+        }
+    }
+
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.simonk.projects.taskmanager"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName getVersion()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${rootProject.name}-${variant.versionName}.apk"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug_config
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
