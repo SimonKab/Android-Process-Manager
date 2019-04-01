@@ -25,8 +25,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+         {
 
+    private ProcessAdapter processAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.activity_main_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-
-        updateUi();
+        processAdapter = new ProcessAdapter();
+        recyclerView.setAdapter(processAdapter);
     }
 
     private void updateUi() {
@@ -52,5 +54,73 @@ public class MainActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.all_memory)).setText("" + allMemory + "G");
         ((TextView)findViewById(R.id.free_memory)).setText("" + availMemory + "G");
         ((TextView)findViewById(R.id.percent_memory)).setText("" + (int)(availMemory * 100 / allMemory) + "%");
+
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
+                = activityManager.getRunningAppProcesses();
+
+        PackageManager packageManager = getPackageManager();
+
+        List<ProcessInfo> processInfoList = new ArrayList<>();
+        for (ActivityManager.RunningAppProcessInfo info : runningAppProcessInfos) {
+            ProcessInfo processInfo = new ProcessInfo();
+            try {
+                ApplicationInfo applicationInfo =
+                        packageManager.getApplicationInfo(info.processName, 0);
+                processInfo.text = packageManager.getApplicationLabel(applicationInfo).toString();
+                processInfo.ppackage = info.processName;
+            } catch (PackageManager.NameNotFoundException e) {
+                continue;
+            }
+            processInfoList.add(processInfo);
+        }
+
+        processAdapter.resolveActionChange(() -> {
+            processAdapter.setItemsList(processInfoList);
+        });
+    }
+
+    private static class ProcessAdapter extends RecyclerView.Adapter<ProcessAdapter.ProcessAdapterViewHolder> {
+
+        @NonNull
+        @Override
+        public ProcessAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+            View v = inflater.inflate(R.layout.process_list_item, viewGroup, false);
+
+            return new ProcessAdapterViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ProcessAdapterViewHolder processAdapterViewHolder, int i) {
+            processAdapterViewHolder.bind(getItem(i));
+        }
+
+        public static class ProcessAdapterViewHolder extends RecyclerView.ViewHolder {
+
+            private TextView mName;
+            private TextView mPackage;
+
+            private ProcessInfo mItem;
+
+            public ProcessAdapterViewHolder(@NonNull View itemView) {
+                super(itemView);
+                mName = itemView.findViewById(R.id.process_list_item_text);
+                mPackage = itemView.findViewById(R.id.process_list_item_package);
+
+            }
+
+            public void bind(ProcessInfo info) {
+                mItem = info;
+                mName.setText(info.text);
+                mPackage.setText(info.ppackage);
+            }
+        }
+
+    }
+
+    public static class ProcessInfo implements Serializable {
+        public String text;
+        public String ppackage;
     }
 }
