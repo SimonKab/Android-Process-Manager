@@ -69,6 +69,14 @@ public class MainActivity extends AppCompatActivity
                         packageManager.getApplicationInfo(info.processName, 0);
                 processInfo.text = packageManager.getApplicationLabel(applicationInfo).toString();
                 processInfo.ppackage = info.processName;
+                processInfo.priority = info.importance;
+                processInfo.status = applicationInfo.enabled;
+                processInfo.minSdk = applicationInfo.targetSdkVersion;
+                processInfo.uid = applicationInfo.uid;
+                processInfo.description = applicationInfo.descriptionRes != 0
+                        ? getResources().getString(applicationInfo.descriptionRes)
+                        : "";
+                processInfo.pid = info.pid;
             } catch (PackageManager.NameNotFoundException e) {
                 continue;
             }
@@ -78,7 +86,10 @@ public class MainActivity extends AppCompatActivity
         processAdapter.resolveActionChange(() -> {
             processAdapter.setItemsList(processInfoList);
         });
+
+
     }
+
 
     private static class ProcessAdapter extends ObjectListAdapter<ProcessInfo, ProcessAdapter.ProcessAdapterViewHolder> {
 
@@ -118,7 +129,17 @@ public class MainActivity extends AppCompatActivity
                 super(itemView);
                 mName = itemView.findViewById(R.id.process_list_item_text);
                 mPackage = itemView.findViewById(R.id.process_list_item_package);
-
+                itemView.setOnClickListener(v -> {
+                    if (onClickListener != null) {
+                        onClickListener.onClick(v, mItem);
+                    }
+                });
+                itemView.setOnLongClickListener(v -> {
+                    if (onClickListener != null) {
+                        return onClickListener.onLongClick(mItem);
+                    }
+                    return false;
+                });
             }
 
             public void bind(ProcessInfo info) {
@@ -133,5 +154,11 @@ public class MainActivity extends AppCompatActivity
     public static class ProcessInfo implements Serializable {
         public String text;
         public String ppackage;
+        public int priority;
+        public boolean status;
+        public int minSdk;
+        public int uid;
+        public String description;
+        public int pid;
     }
 }
