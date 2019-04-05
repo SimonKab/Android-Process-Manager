@@ -82,18 +82,24 @@ public class MainActivity extends AppCompatActivity
 
     private static class ProcessAdapter extends ObjectListAdapter<ProcessInfo, ProcessAdapter.ProcessAdapterViewHolder> {
 
+        private ProcessAdapterViewHolder.OnClickListener mItemClickListener;
+
         @NonNull
         @Override
         public ProcessAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
             View v = inflater.inflate(R.layout.process_list_item, viewGroup, false);
 
-            return new ProcessAdapterViewHolder(v);
+            return new ProcessAdapterViewHolder(v, mItemClickListener);
         }
 
         @Override
         public void onBindViewHolder(@NonNull ProcessAdapterViewHolder processAdapterViewHolder, int i) {
             processAdapterViewHolder.bind(getItem(i));
+        }
+
+        public void setItemClickListener(ProcessAdapterViewHolder.OnClickListener onClickListener) {
+            mItemClickListener = onClickListener;
         }
 
         public static class ProcessAdapterViewHolder extends RecyclerView.ViewHolder {
@@ -103,7 +109,12 @@ public class MainActivity extends AppCompatActivity
 
             private ProcessInfo mItem;
 
-            public ProcessAdapterViewHolder(@NonNull View itemView) {
+            public interface OnClickListener {
+                void onClick(View v, ProcessInfo ppackage);
+                boolean onLongClick(ProcessInfo info);
+            }
+
+            public ProcessAdapterViewHolder(@NonNull View itemView, OnClickListener onClickListener) {
                 super(itemView);
                 mName = itemView.findViewById(R.id.process_list_item_text);
                 mPackage = itemView.findViewById(R.id.process_list_item_package);
