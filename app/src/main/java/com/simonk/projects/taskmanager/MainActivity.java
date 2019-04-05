@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private static class ProcessAdapter extends RecyclerView.Adapter<ProcessAdapter.ProcessAdapterViewHolder> {
+    private static class ProcessAdapter extends ObjectListAdapter<ProcessInfo, ProcessAdapter.ProcessAdapterViewHolder> {
 
         @NonNull
         @Override
