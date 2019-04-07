@@ -88,7 +88,30 @@ public class MainActivity extends AppCompatActivity
             processAdapter.setItemsList(processInfoList);
         });
 
+        processAdapter.setItemClickListener(new ProcessAdapter.ProcessAdapterViewHolder.OnClickListener() {
+            @Override
+            public void onClick(View v, ProcessInfo info) {
+                ViewGroup detailsView = (ViewGroup)
+                        LayoutInflater.from(MainActivity.this).inflate(R.layout.process_list_item_details, null);
+                if (((FrameLayout) v.findViewById(R.id.process_list_item_details)).getChildCount() == 0) {
+                    ((TextView) detailsView.findViewById(R.id.priority)).setText("Priority: " + info.priority);
+                    ((TextView) detailsView.findViewById(R.id.status)).setText("Enabled: " + info.status);
+                    ((TextView) detailsView.findViewById(R.id.uid)).setText("Uid: " + info.uid);
+                    ((TextView) detailsView.findViewById(R.id.min_sdk)).setText("Target sdk: " + info.minSdk);
+                    ((TextView) detailsView.findViewById(R.id.description)).setText("Description: " + info.description);
+                    ((FrameLayout) v.findViewById(R.id.process_list_item_details)).addView(detailsView);
 
+                } else {
+                    ((FrameLayout) v.findViewById(R.id.process_list_item_details)).removeAllViews();
+                }
+            }
+
+            @Override
+            public boolean onLongClick(ProcessInfo info) {
+
+                return false;
+            }
+        });
     }
 
     private static class ProcessAdapter extends ObjectListAdapter<ProcessInfo, ProcessAdapter.ProcessAdapterViewHolder> {
