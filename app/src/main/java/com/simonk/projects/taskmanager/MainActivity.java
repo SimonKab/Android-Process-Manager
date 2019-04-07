@@ -25,8 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-         {
+public class MainActivity extends AppCompatActivity {
 
     private ProcessAdapter processAdapter;
 
@@ -42,6 +41,8 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         processAdapter = new ProcessAdapter();
         recyclerView.setAdapter(processAdapter);
+
+        updateUi();
     }
 
     private void updateUi() {
@@ -100,7 +101,15 @@ public class MainActivity extends AppCompatActivity
                     ((TextView) detailsView.findViewById(R.id.min_sdk)).setText("Target sdk: " + info.minSdk);
                     ((TextView) detailsView.findViewById(R.id.description)).setText("Description: " + info.description);
                     ((FrameLayout) v.findViewById(R.id.process_list_item_details)).addView(detailsView);
-
+                    ((Button) detailsView.findViewById(R.id.kill)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            android.os.Process.killProcess(info.pid);
+                            android.os.Process.sendSignal(info.pid, android.os.Process.SIGNAL_KILL);
+                            activityManager.killBackgroundProcesses(info.ppackage);
+                            updateUi();
+                        }
+                    });
                 } else {
                     ((FrameLayout) v.findViewById(R.id.process_list_item_details)).removeAllViews();
                 }
