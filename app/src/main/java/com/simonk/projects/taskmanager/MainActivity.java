@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity
                 ApplicationInfo applicationInfo =
                         packageManager.getApplicationInfo(info.processName, 0);
                 processInfo.text = packageManager.getApplicationLabel(applicationInfo).toString();
+                processInfo.image = packageManager.getApplicationIcon(applicationInfo);
                 processInfo.ppackage = info.processName;
                 processInfo.priority = info.importance;
                 processInfo.status = applicationInfo.enabled;
@@ -89,7 +90,6 @@ public class MainActivity extends AppCompatActivity
 
 
     }
-
 
     private static class ProcessAdapter extends ObjectListAdapter<ProcessInfo, ProcessAdapter.ProcessAdapterViewHolder> {
 
@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity
         public static class ProcessAdapterViewHolder extends RecyclerView.ViewHolder {
 
             private TextView mName;
+            private ImageView mImage;
             private TextView mPackage;
 
             private ProcessInfo mItem;
@@ -128,6 +129,7 @@ public class MainActivity extends AppCompatActivity
             public ProcessAdapterViewHolder(@NonNull View itemView, OnClickListener onClickListener) {
                 super(itemView);
                 mName = itemView.findViewById(R.id.process_list_item_text);
+                mImage = itemView.findViewById(R.id.process_list_item_logo);
                 mPackage = itemView.findViewById(R.id.process_list_item_package);
                 itemView.setOnClickListener(v -> {
                     if (onClickListener != null) {
@@ -145,6 +147,7 @@ public class MainActivity extends AppCompatActivity
             public void bind(ProcessInfo info) {
                 mItem = info;
                 mName.setText(info.text);
+                mImage.setImageDrawable(info.image);
                 mPackage.setText(info.ppackage);
             }
         }
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity
 
     public static class ProcessInfo implements Serializable {
         public String text;
+        public Drawable image;
         public String ppackage;
         public int priority;
         public boolean status;
