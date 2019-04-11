@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements ChangeDetailsDialog.OnChanged {
+        implements CleanedDialog.OnCleaned, ChangeDetailsDialog.OnChanged {
 
     private ProcessAdapter processAdapter;
 
@@ -42,6 +42,14 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         processAdapter = new ProcessAdapter();
         recyclerView.setAdapter(processAdapter);
+
+        findViewById(R.id.clear_all).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CleanedDialog cleanedDialog = new CleanedDialog();
+                cleanedDialog.show(getSupportFragmentManager(), "CleanedDialog");
+            }
+        });
 
         updateUi();
     }
@@ -126,6 +134,11 @@ public class MainActivity extends AppCompatActivity
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onCleaned() {
+        updateUi();
     }
 
     @Override
