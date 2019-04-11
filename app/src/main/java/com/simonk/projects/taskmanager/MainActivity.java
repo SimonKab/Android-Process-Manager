@@ -25,7 +25,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements ChangeDetailsDialog.OnChanged {
 
     private ProcessAdapter processAdapter;
 
@@ -117,10 +118,28 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onLongClick(ProcessInfo info) {
-
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(ChangeDetailsDialog.PROCESS_INFO_ARG, info);
+                ChangeDetailsDialog changeDetailsDialog = new ChangeDetailsDialog();
+                changeDetailsDialog.setArguments(bundle);
+                changeDetailsDialog.show(getSupportFragmentManager(), "ChangeDetailsDialog");
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onChanged(ProcessInfo info, int priority) {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
+                = activityManager.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : runningAppProcessInfos) {
+            if (runningAppProcessInfo.processName.equals(info.ppackage)) {
+                runningAppProcessInfo.importance = priority;
+            }
+        }
+
+        updateUi();
     }
 
     private static class ProcessAdapter extends ObjectListAdapter<ProcessInfo, ProcessAdapter.ProcessAdapterViewHolder> {
