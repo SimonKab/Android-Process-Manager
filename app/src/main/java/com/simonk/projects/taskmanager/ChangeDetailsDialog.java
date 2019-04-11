@@ -32,7 +32,7 @@ public class ChangeDetailsDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle onSaveInstanceState) {
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-        View root = layoutInflater.inflate(R.layout.change_details_dualog, null);
+        View root = layoutInflater.inflate(R.layout.change_details_dialog, null);
 
         MainActivity.ProcessInfo processInfo =
                 (MainActivity.ProcessInfo)getArguments().getSerializable(PROCESS_INFO_ARG);
