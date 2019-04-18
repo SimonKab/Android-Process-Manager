@@ -27,6 +27,7 @@ import com.simonk.projects.taskmanager.ui.process.CleanedDialog;
 import com.simonk.projects.taskmanager.ui.util.ObjectListAdapter;
 import com.simonk.projects.taskmanager.R;
 import com.simonk.projects.taskmanager.databinding.ActivityMainBinding;
+import com.simonk.projects.taskmanager.util.MemoryUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -71,12 +72,9 @@ public class MainActivity extends BindingActivity
     }
 
     private void updateUi() {
-        ActivityManager actManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
-        actManager.getMemoryInfo(memInfo);
-        double bToG = 1024 * 1024 * 1024;
-        float allMemory = ((int) (memInfo.totalMem / bToG * 100)) / 100.0f;
-        float availMemory = ((int) (memInfo.availMem / bToG * 100)) / 100.0f;
+        ActivityManager.MemoryInfo memInfo = MemoryUtils.getMemoryInfo(this);
+        float allMemory = MemoryUtils.getTotalMemory(memInfo);
+        float availMemory = MemoryUtils.getAvailableMemory(memInfo);
         ((TextView)findViewById(R.id.all_memory)).setText("" + allMemory + "G");
         ((TextView)findViewById(R.id.free_memory)).setText("" + availMemory + "G");
         ((TextView)findViewById(R.id.percent_memory)).setText("" + (int)(availMemory * 100 / allMemory) + "%");
