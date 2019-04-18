@@ -1,4 +1,4 @@
-package com.simonk.projects.taskmanager;
+package com.simonk.projects.taskmanager.ui.process;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.fragment.app.DialogFragment;
+
+import com.simonk.projects.taskmanager.R;
+import com.simonk.projects.taskmanager.ui.MainActivity;
 
 public class ChangeDetailsDialog extends DialogFragment {
 

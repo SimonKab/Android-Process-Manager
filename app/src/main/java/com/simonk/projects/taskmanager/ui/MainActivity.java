@@ -1,4 +1,4 @@
-package com.simonk.projects.taskmanager;
+package com.simonk.projects.taskmanager.ui;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +15,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.simonk.projects.taskmanager.ui.process.ChangeDetailsDialog;
+import com.simonk.projects.taskmanager.ui.process.CleanedDialog;
+import com.simonk.projects.taskmanager.ui.util.ObjectListAdapter;
+import com.simonk.projects.taskmanager.R;
 import com.simonk.projects.taskmanager.databinding.ActivityMainBinding;
 
 import java.io.Serializable;
@@ -45,7 +47,7 @@ public class MainActivity extends BindingActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Toolbar toolbar = findViewById(R.id.toolbar);

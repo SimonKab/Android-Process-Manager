@@ -1,4 +1,4 @@
-package com.simonk.projects.taskmanager;
+package com.simonk.projects.taskmanager.ui.util;
 
 import android.os.Bundle;
 import android.os.Parcelable;

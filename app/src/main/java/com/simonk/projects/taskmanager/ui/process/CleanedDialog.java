@@ -1,4 +1,4 @@
-package com.simonk.projects.taskmanager;
+package com.simonk.projects.taskmanager.ui.process;
 
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
+
+import com.simonk.projects.taskmanager.R;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.simonk.projects.taskmanager;
+package com.simonk.projects.taskmanager.ui;
 
 import android.os.Bundle;
 
