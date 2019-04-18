@@ -18,22 +18,35 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.simonk.projects.taskmanager.databinding.ActivityMainBinding;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BindingActivity
         implements CleanedDialog.OnCleaned, ChangeDetailsDialog.OnChanged {
 
     private ProcessAdapter processAdapter;
 
     @Override
+    public ActivityMainBinding getBinding() {
+        return (ActivityMainBinding) super.getBinding();
+    }
+
+    @Override
+    public ViewDataBinding initBinding() {
+        return DataBindingUtil.inflate(getLayoutInflater(), R.layout.activity_main, null, false);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
