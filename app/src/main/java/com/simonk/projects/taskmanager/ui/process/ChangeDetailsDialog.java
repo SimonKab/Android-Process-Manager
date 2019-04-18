@@ -12,6 +12,7 @@ import android.widget.EditText;
 import androidx.fragment.app.DialogFragment;
 
 import com.simonk.projects.taskmanager.R;
+import com.simonk.projects.taskmanager.entity.ProcessInfo;
 import com.simonk.projects.taskmanager.ui.MainActivity;
 
 public class ChangeDetailsDialog extends DialogFragment {
@@ -19,7 +20,7 @@ public class ChangeDetailsDialog extends DialogFragment {
     public static final String PROCESS_INFO_ARG = "PROCESS_INFO_ARG";
 
     public interface OnChanged {
-        void onChanged(MainActivity.ProcessInfo info, int priority);
+        void onChanged(ProcessInfo info, int priority);
     }
 
     private OnChanged mOnChanged;
@@ -37,11 +38,11 @@ public class ChangeDetailsDialog extends DialogFragment {
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         View root = layoutInflater.inflate(R.layout.change_details_dialog, null);
 
-        MainActivity.ProcessInfo processInfo =
-                (MainActivity.ProcessInfo)getArguments().getSerializable(PROCESS_INFO_ARG);
+        ProcessInfo processInfo =
+                (ProcessInfo)getArguments().getSerializable(PROCESS_INFO_ARG);
 
         EditText editText = root.findViewById(R.id.details_priority);
-        editText.setText(""+processInfo.priority);
+        editText.setText(""+processInfo.getPriority());
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(root)

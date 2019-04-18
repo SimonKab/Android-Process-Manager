@@ -21,6 +21,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.simonk.projects.taskmanager.entity.ProcessInfo;
 import com.simonk.projects.taskmanager.ui.process.ChangeDetailsDialog;
 import com.simonk.projects.taskmanager.ui.process.CleanedDialog;
 import com.simonk.projects.taskmanager.ui.util.ObjectListAdapter;
@@ -92,17 +93,17 @@ public class MainActivity extends BindingActivity
             try {
                 ApplicationInfo applicationInfo =
                         packageManager.getApplicationInfo(info.processName, 0);
-                processInfo.text = packageManager.getApplicationLabel(applicationInfo).toString();
-                processInfo.image = packageManager.getApplicationIcon(applicationInfo);
-                processInfo.ppackage = info.processName;
-                processInfo.priority = info.importance;
-                processInfo.status = applicationInfo.enabled;
-                processInfo.minSdk = applicationInfo.targetSdkVersion;
-                processInfo.uid = applicationInfo.uid;
-                processInfo.description = applicationInfo.descriptionRes != 0
+                processInfo.setText(packageManager.getApplicationLabel(applicationInfo).toString());
+                processInfo.setImage(packageManager.getApplicationIcon(applicationInfo));
+                processInfo.setPpackage(info.processName);
+                processInfo.setPriority(info.importance);
+                processInfo.setStatus(applicationInfo.enabled);
+                processInfo.setMinSdk(applicationInfo.targetSdkVersion);
+                processInfo.setUid(applicationInfo.uid);
+                processInfo.setDescription(applicationInfo.descriptionRes != 0
                         ? getResources().getString(applicationInfo.descriptionRes)
-                        : "";
-                processInfo.pid = info.pid;
+                        : "");
+                processInfo.setPid(info.pid);
             } catch (PackageManager.NameNotFoundException e) {
                 continue;
             }
@@ -119,18 +120,18 @@ public class MainActivity extends BindingActivity
                 ViewGroup detailsView = (ViewGroup)
                         LayoutInflater.from(MainActivity.this).inflate(R.layout.process_list_item_details, null);
                 if (((FrameLayout) v.findViewById(R.id.process_list_item_details)).getChildCount() == 0) {
-                    ((TextView) detailsView.findViewById(R.id.priority)).setText("Priority: " + info.priority);
-                    ((TextView) detailsView.findViewById(R.id.status)).setText("Enabled: " + info.status);
-                    ((TextView) detailsView.findViewById(R.id.uid)).setText("Uid: " + info.uid);
-                    ((TextView) detailsView.findViewById(R.id.min_sdk)).setText("Target sdk: " + info.minSdk);
-                    ((TextView) detailsView.findViewById(R.id.description)).setText("Description: " + info.description);
+                    ((TextView) detailsView.findViewById(R.id.priority)).setText("Priority: " + info.getPriority());
+                    ((TextView) detailsView.findViewById(R.id.status)).setText("Enabled: " + info.isStatus());
+                    ((TextView) detailsView.findViewById(R.id.uid)).setText("Uid: " + info.getUid());
+                    ((TextView) detailsView.findViewById(R.id.min_sdk)).setText("Target sdk: " + info.getMinSdk());
+                    ((TextView) detailsView.findViewById(R.id.description)).setText("Description: " + info.getDescription());
                     ((FrameLayout) v.findViewById(R.id.process_list_item_details)).addView(detailsView);
                     ((Button) detailsView.findViewById(R.id.kill)).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            android.os.Process.killProcess(info.pid);
-                            android.os.Process.sendSignal(info.pid, android.os.Process.SIGNAL_KILL);
-                            activityManager.killBackgroundProcesses(info.ppackage);
+                            android.os.Process.killProcess(info.getPid());
+                            android.os.Process.sendSignal(info.getPid(), android.os.Process.SIGNAL_KILL);
+                            activityManager.killBackgroundProcesses(info.getPpackage());
                             updateUi();
                         }
                     });
@@ -162,7 +163,7 @@ public class MainActivity extends BindingActivity
         List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
                 = activityManager.getRunningAppProcesses();
         for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : runningAppProcessInfos) {
-            if (runningAppProcessInfo.processName.equals(info.ppackage)) {
+            if (runningAppProcessInfo.processName.equals(info.getPpackage())) {
                 runningAppProcessInfo.importance = priority;
             }
         }
@@ -225,23 +226,11 @@ public class MainActivity extends BindingActivity
 
             public void bind(ProcessInfo info) {
                 mItem = info;
-                mName.setText(info.text);
-                mImage.setImageDrawable(info.image);
-                mPackage.setText(info.ppackage);
+                mName.setText(info.getText());
+                mImage.setImageDrawable(info.getImage());
+                mPackage.setText(info.getPpackage());
             }
         }
 
-    }
-
-    public static class ProcessInfo implements Serializable {
-        public String text;
-        public Drawable image;
-        public String ppackage;
-        public int priority;
-        public boolean status;
-        public int minSdk;
-        public int uid;
-        public String description;
-        public int pid;
     }
 }
