@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +70,14 @@ public class MainActivity extends BindingActivity
             }
         });
 
-        updateUi();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateUi();
+                handler.postDelayed(this, 30000);
+            }
+        }, 1000);
     }
 
     private void updateUi() {
