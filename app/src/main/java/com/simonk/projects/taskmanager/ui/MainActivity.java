@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simonk.projects.taskmanager.entity.ProcessInfo;
+import com.simonk.projects.taskmanager.repository.ProcessRepository;
 import com.simonk.projects.taskmanager.ui.process.ChangeDetailsDialog;
 import com.simonk.projects.taskmanager.ui.process.CleanedDialog;
 import com.simonk.projects.taskmanager.ui.util.ObjectListAdapter;
@@ -79,37 +80,8 @@ public class MainActivity extends BindingActivity
         ((TextView)findViewById(R.id.free_memory)).setText("" + availMemory + "G");
         ((TextView)findViewById(R.id.percent_memory)).setText("" + (int)(availMemory * 100 / allMemory) + "%");
 
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
-                = activityManager.getRunningAppProcesses();
-
-        PackageManager packageManager = getPackageManager();
-
-        List<ProcessInfo> processInfoList = new ArrayList<>();
-        for (ActivityManager.RunningAppProcessInfo info : runningAppProcessInfos) {
-            ProcessInfo processInfo = new ProcessInfo();
-            try {
-                ApplicationInfo applicationInfo =
-                        packageManager.getApplicationInfo(info.processName, 0);
-                processInfo.setText(packageManager.getApplicationLabel(applicationInfo).toString());
-                processInfo.setImage(packageManager.getApplicationIcon(applicationInfo));
-                processInfo.setPpackage(info.processName);
-                processInfo.setPriority(info.importance);
-                processInfo.setStatus(applicationInfo.enabled);
-                processInfo.setMinSdk(applicationInfo.targetSdkVersion);
-                processInfo.setUid(applicationInfo.uid);
-                processInfo.setDescription(applicationInfo.descriptionRes != 0
-                        ? getResources().getString(applicationInfo.descriptionRes)
-                        : "");
-                processInfo.setPid(info.pid);
-            } catch (PackageManager.NameNotFoundException e) {
-                continue;
-            }
-            processInfoList.add(processInfo);
-        }
-
         processAdapter.resolveActionChange(() -> {
-            processAdapter.setItemsList(processInfoList);
+            processAdapter.setItemsList(new ProcessRepository().getAllProcessInfo(this));
         });
 
         processAdapter.setItemClickListener(new ProcessAdapter.ProcessAdapterViewHolder.OnClickListener() {
@@ -127,9 +99,7 @@ public class MainActivity extends BindingActivity
                     ((Button) detailsView.findViewById(R.id.kill)).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            android.os.Process.killProcess(info.getPid());
-                            android.os.Process.sendSignal(info.getPid(), android.os.Process.SIGNAL_KILL);
-                            activityManager.killBackgroundProcesses(info.getPpackage());
+                            new ProcessRepository().killProcess(MainActivity.this, info);
                             updateUi();
                         }
                     });
@@ -157,15 +127,7 @@ public class MainActivity extends BindingActivity
 
     @Override
     public void onChanged(ProcessInfo info, int priority) {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
-                = activityManager.getRunningAppProcesses();
-        for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : runningAppProcessInfos) {
-            if (runningAppProcessInfo.processName.equals(info.getPpackage())) {
-                runningAppProcessInfo.importance = priority;
-            }
-        }
-
+        new ProcessRepository().changeProcessPriority(this, info, priority);
         updateUi();
     }
 

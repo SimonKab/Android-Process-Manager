@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.fragment.app.DialogFragment;
 
 import com.simonk.projects.taskmanager.R;
+import com.simonk.projects.taskmanager.repository.ProcessRepository;
 import com.simonk.projects.taskmanager.util.MemoryUtils;
 
 import java.util.List;
@@ -42,17 +43,7 @@ public class CleanedDialog extends DialogFragment {
         float beforeAvailMemory = MemoryUtils.getAvailableMemory(memInfo);
         ((TextView)root.findViewById(R.id.before_memory)).setText("Before cleaning: " + beforeAvailMemory + "G");
 
-        ActivityManager activityManager = (ActivityManager) requireContext().getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
-                = activityManager.getRunningAppProcesses();
-
-        for (ActivityManager.RunningAppProcessInfo info : runningAppProcessInfos) {
-            if (!info.processName.contains("simonk")) {
-                android.os.Process.killProcess(info.pid);
-                android.os.Process.sendSignal(info.pid, android.os.Process.SIGNAL_KILL);
-                activityManager.killBackgroundProcesses(info.processName);
-            }
-        }
+        new ProcessRepository().getAllProcessInfo(requireContext());
 
         memInfo = MemoryUtils.getMemoryInfo(requireContext());
         float afterAvailMemory = MemoryUtils.getAvailableMemory(memInfo);
