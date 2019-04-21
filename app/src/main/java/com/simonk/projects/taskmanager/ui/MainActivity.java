@@ -113,15 +113,12 @@ public class MainActivity extends BindingActivity
         });
 
         mProcessViewModel.getAllProcessInfo().observe(this, this::updateProcessAdapter);
+    }
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateUi();
-                handler.postDelayed(this, 30000);
-            }
-        }, 1000);
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUi();
     }
 
     private void updateUi() {
