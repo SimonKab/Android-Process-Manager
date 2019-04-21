@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +28,7 @@ import com.simonk.projects.taskmanager.entity.ProcessInfo;
 import com.simonk.projects.taskmanager.repository.ProcessRepository;
 import com.simonk.projects.taskmanager.ui.process.ChangeDetailsDialog;
 import com.simonk.projects.taskmanager.ui.process.CleanedDialog;
+import com.simonk.projects.taskmanager.ui.process.viewmodels.ProcessViewModel;
 import com.simonk.projects.taskmanager.ui.util.ObjectListAdapter;
 import com.simonk.projects.taskmanager.R;
 import com.simonk.projects.taskmanager.databinding.ActivityMainBinding;
@@ -40,6 +43,8 @@ public class MainActivity extends BindingActivity
 
     private ProcessAdapter processAdapter;
 
+    private ProcessViewModel mProcessViewModel;
+
     @Override
     public ActivityMainBinding getBinding() {
         return (ActivityMainBinding) super.getBinding();
@@ -53,6 +58,8 @@ public class MainActivity extends BindingActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mProcessViewModel = ViewModelProviders.of(this).get(ProcessViewModel.class);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -70,28 +77,6 @@ public class MainActivity extends BindingActivity
             }
         });
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateUi();
-                handler.postDelayed(this, 30000);
-            }
-        }, 1000);
-    }
-
-    private void updateUi() {
-        ActivityManager.MemoryInfo memInfo = MemoryUtils.getMemoryInfo(this);
-        float allMemory = MemoryUtils.getTotalMemory(memInfo);
-        float availMemory = MemoryUtils.getAvailableMemory(memInfo);
-        ((TextView)findViewById(R.id.all_memory)).setText("" + allMemory + "G");
-        ((TextView)findViewById(R.id.free_memory)).setText("" + availMemory + "G");
-        ((TextView)findViewById(R.id.percent_memory)).setText("" + (int)(availMemory * 100 / allMemory) + "%");
-
-        processAdapter.resolveActionChange(() -> {
-            processAdapter.setItemsList(new ProcessRepository().getAllProcessInfo(this));
-        });
-
         processAdapter.setItemClickListener(new ProcessAdapter.ProcessAdapterViewHolder.OnClickListener() {
             @Override
             public void onClick(View v, ProcessInfo info) {
@@ -107,7 +92,7 @@ public class MainActivity extends BindingActivity
                     ((Button) detailsView.findViewById(R.id.kill)).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            new ProcessRepository().killProcess(MainActivity.this, info);
+                            mProcessViewModel.getRepository().killProcess(MainActivity.this, info);
                             updateUi();
                         }
                     });
@@ -126,6 +111,33 @@ public class MainActivity extends BindingActivity
                 return false;
             }
         });
+
+        mProcessViewModel.getAllProcessInfo().observe(this, this::updateProcessAdapter);
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateUi();
+                handler.postDelayed(this, 30000);
+            }
+        }, 1000);
+    }
+
+    private void updateUi() {
+        float allMemory = mProcessViewModel.getTotalMemory();
+        float availMemory = mProcessViewModel.getAvailableMemory();
+        ((TextView)findViewById(R.id.all_memory)).setText("" + allMemory + "G");
+        ((TextView)findViewById(R.id.free_memory)).setText("" + availMemory + "G");
+        ((TextView)findViewById(R.id.percent_memory)).setText("" + (int)(availMemory * 100 / allMemory) + "%");
+
+        mProcessViewModel.forceUpdateProcessInfo();
+    }
+
+    private void updateProcessAdapter(List<ProcessInfo> processInfoList) {
+        processAdapter.resolveActionChange(() -> {
+            processAdapter.setItemsList(processInfoList);
+        });
     }
 
     @Override
@@ -135,7 +147,7 @@ public class MainActivity extends BindingActivity
 
     @Override
     public void onChanged(ProcessInfo info, int priority) {
-        new ProcessRepository().changeProcessPriority(this, info, priority);
+        mProcessViewModel.getRepository().changeProcessPriority(this, info, priority);
         updateUi();
     }
 
