@@ -35,6 +35,7 @@ import com.simonk.projects.taskmanager.ui.process.ChangeDetailsDialog;
 import com.simonk.projects.taskmanager.ui.process.CleanedDialog;
 import com.simonk.projects.taskmanager.ui.process.ProcessFragment;
 import com.simonk.projects.taskmanager.ui.process.viewmodels.ProcessViewModel;
+import com.simonk.projects.taskmanager.ui.terminal.TerminalFragment;
 import com.simonk.projects.taskmanager.ui.util.ObjectListAdapter;
 import com.simonk.projects.taskmanager.R;
 import com.simonk.projects.taskmanager.databinding.ActivityMainBinding;
@@ -74,7 +75,7 @@ public class MainActivity extends BindingActivity {
                 "Apps");
         adapter.addFragment(ProcessFragment.newInstance(),
                 "BlackList");
-        adapter.addFragment(ProcessFragment.newInstance(),
+        adapter.addFragment(TerminalFragment.newInstance(),
                 "Terminal");
         viewPager.setAdapter(adapter);
     }
