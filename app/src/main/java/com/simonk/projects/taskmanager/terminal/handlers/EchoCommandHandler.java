@@ -30,7 +30,7 @@ public class EchoCommandHandler extends RequestHandler {
             }
         }
 
-        call.setResponseContent(responseBuilder.toString());
+        //call.setResponseContent(responseBuilder.toString());
     }
 
 }

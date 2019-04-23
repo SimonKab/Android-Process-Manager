@@ -14,7 +14,7 @@ public class PwdCommandHandler extends RequestHandler {
 
     @Override
     public void handleRequest(TerminalCall call, Terminal terminal) {
-        call.setResponseContent(terminal.getCurrentDirectory().getAbsolutePath());
+        //call.setResponseContent(terminal.getCurrentDirectory().getAbsolutePath());
     }
 
 }

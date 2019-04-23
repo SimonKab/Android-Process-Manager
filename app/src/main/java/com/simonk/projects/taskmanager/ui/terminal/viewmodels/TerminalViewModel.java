@@ -10,7 +10,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.simonk.projects.taskmanager.entity.TerminalCall;
+import com.simonk.projects.taskmanager.terminal.StringTerminalListener;
 import com.simonk.projects.taskmanager.terminal.Terminal;
+import com.simonk.projects.taskmanager.terminal.TerminalService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,35 +22,31 @@ import java.util.List;
 public class TerminalViewModel extends AndroidViewModel {
 
     private MutableLiveData<List<TerminalCall>> mTerminalRequestArray;
-    private MutableLiveData<TerminalCall> mTerminalLastResponse;
 
-    private Terminal mTerminal;
+    private TerminalService mTerminalService;
 
     public TerminalViewModel(@NonNull Application application) {
         super(application);
 
-        mTerminal = new Terminal();
+        mTerminalService = new TerminalService();
 
-        mTerminalLastResponse = new MutableLiveData<>();
         mTerminalRequestArray = new MutableLiveData<>();
         mTerminalRequestArray.setValue(new ArrayList<>());
     }
 
-    public void makeNewTerminalRequest(String requestString) {
+    public void makeNewTerminalRequest(String requestString, StringTerminalListener terminalListener) {
         TerminalCall request = new TerminalCall();
         request.setRequest(requestString);
-        TerminalCall response = mTerminal.makeNewRequest(request);
-        mTerminalLastResponse.setValue(response);
+        mTerminalService.makeTerminalRequest(request, terminalListener);
+    }
 
-        mTerminalRequestArray.getValue().add(response);
+    public void stopTerminalRequest() {
+        mTerminalService.stopTerminalRequest();
     }
 
     public LiveData<List<TerminalCall>> getTerminalRequests() {
         return mTerminalRequestArray;
     }
 
-    public LiveData<TerminalCall> getLastResponse() {
-        return mTerminalLastResponse;
-    }
 
 }

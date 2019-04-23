@@ -16,6 +16,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Terminal {
 
@@ -57,8 +64,7 @@ public class Terminal {
                     convertEnvironmentVarsToString(mEnvironmentVars),
                     mCurrentDirectory
             );
-            terminalRequest.setResponseContent(CharStreams.toString(new InputStreamReader(process.getInputStream(), Charsets.UTF_8)));
-            terminalRequest.setResponseErrorContent(CharStreams.toString(new InputStreamReader(process.getErrorStream(), Charsets.UTF_8)));
+            terminalRequest.setProcess(process);
         } catch (Exception e) {
             terminalRequest.setException(e);
         }

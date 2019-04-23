@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.simonk.projects.taskmanager.R;
 import com.simonk.projects.taskmanager.databinding.FragmentTerminalBinding;
 import com.simonk.projects.taskmanager.entity.TerminalCall;
+import com.simonk.projects.taskmanager.terminal.StringTerminalListener;
 import com.simonk.projects.taskmanager.ui.MainActivity;
 import com.simonk.projects.taskmanager.ui.terminal.viewmodels.TerminalViewModel;
 
@@ -47,7 +48,6 @@ public class TerminalFragment extends Fragment {
         View root = bindingView(inflater, container);
 
         mViewModel = ViewModelProviders.of(this).get(TerminalViewModel.class);
-        mViewModel.getLastResponse().observe(this, this::onNewResponse);
         updateUi(mViewModel.getTerminalRequests().getValue());
 
         addEditTextLayout(mRootView);
@@ -82,7 +82,7 @@ public class TerminalFragment extends Fragment {
             EditText editText = addEditTextLayout(mRootView);
             editText.setText(request.getRequest());
             editText.setEnabled(false);
-            addResponseTextView(convertTerminalRequest(request));
+            //addResponseTextView(convertTerminalRequest(request));
         }
     }
 
@@ -112,28 +112,46 @@ public class TerminalFragment extends Fragment {
     }
 
     private void makeTerminalRequest(String request) {
-        mViewModel.makeNewTerminalRequest(request);
+        TextView responseTextView = addResponseTextView();
+        mViewModel.makeNewTerminalRequest(request, new StringTerminalListener() {
+            @Override
+            public void onInput(String input) {
+                responseTextView.setText(input);
+            }
+
+            @Override
+            public void onError(String input) {
+
+            }
+
+            @Override
+            public String onOutputString() {
+                return null;
+            }
+
+            @Override
+            public void onInputStarted() {
+                responseTextView.setText("");
+            }
+
+            @Override
+            public void onInputFinished(Exception exception) {
+
+            }
+
+            @Override
+            public void onErrorFinished() {
+
+            }
+
+            @Override
+            public void onFinished() {
+                addEditTextLayout(mRootView);
+            }
+        });
     }
 
-    private void onNewResponse(TerminalCall request) {
-        blockAllEditTexts(mRootView);
-        addResponseTextView(convertTerminalRequest(request));
-        addEditTextLayout(mRootView);
-    }
-
-    private String convertTerminalRequest(TerminalCall request) {
-        if (request.getException() != null) {
-            return request.getException().getMessage();
-        }
-
-        if (request.getResponseErrorContent() != null && !request.getResponseErrorContent().isEmpty()) {
-            return request.getResponseErrorContent();
-        }
-
-        return request.getResponseContent();
-    }
-
-    private void addResponseTextView(String content) {
+    private TextView addResponseTextView() {
         int margin16 = (int) (16 * getResources().getDisplayMetrics().density);
 
         TextView textView = new TextView(requireContext());
@@ -143,10 +161,10 @@ public class TerminalFragment extends Fragment {
         textViewParams.rightMargin = margin16;
         textViewParams.bottomMargin = margin16;
 
-        textView.setText(content);
         textView.setTextColor(Color.parseColor("#FFFFFF"));
 
         mRootView.addView(textView, textViewParams);
+        return textView;
     }
 
     private EditText addEditTextLayout(ViewGroup parent) {
