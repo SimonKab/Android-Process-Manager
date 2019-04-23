@@ -71,7 +71,9 @@ public class TerminalService {
                 int length = 0;
                 while (length != -1) {
                     if (mTerminated) {
+                        process.destroy();
                         stop();
+                        return;
                     }
                     length = contentInputStream.read(BUFFER);
                     mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_INPUT, BUFFER));

@@ -1,6 +1,7 @@
 package com.simonk.projects.taskmanager.ui.terminal;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -12,13 +13,16 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -35,6 +39,7 @@ import java.util.List;
 public class TerminalFragment extends Fragment {
 
     private ViewGroup mRootView;
+    private Button mStopButton;
 
     private TerminalViewModel mViewModel;
 
@@ -46,6 +51,13 @@ public class TerminalFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
         View root = bindingView(inflater, container);
+
+        mStopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViewModel.stopTerminalRequest();
+            }
+        });
 
         mViewModel = ViewModelProviders.of(this).get(TerminalViewModel.class);
         updateUi(mViewModel.getTerminalRequests().getValue());
@@ -60,6 +72,7 @@ public class TerminalFragment extends Fragment {
                 = DataBindingUtil.inflate(inflater, R.layout.fragment_terminal, container, false);
 
         mRootView = binding.terminalRoot;
+        mStopButton = binding.terminalStopButton;
 
         return binding.getRoot();
     }
