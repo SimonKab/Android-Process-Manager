@@ -73,7 +73,7 @@ public class MainActivity extends BindingActivity {
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), getBinding().coordinator);
         adapter.addFragment(ProcessFragment.newInstance(),
                 "Apps");
         adapter.addFragment(ProcessFragment.newInstance(),
@@ -87,8 +87,11 @@ public class MainActivity extends BindingActivity {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
+        private View mRootView;
+
+        public ViewPagerAdapter(FragmentManager manager, View root) {
             super(manager);
+            mRootView = root;
         }
 
         @Override
@@ -109,6 +112,33 @@ public class MainActivity extends BindingActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
+        }
+
+        @Override
+        public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            super.setPrimaryItem(container, position, object);
+            if (mRootView.getBackground() instanceof ColorDrawable) {
+                int installedColor = ((ColorDrawable) mRootView.getBackground()).getColor();
+                int newColor = installedColor;
+                if (position == 2) {
+                    newColor =  Color.parseColor("#455A64");
+                } else {
+                    newColor = mRootView.getResources().getColor(R.color.colorPrimary);
+
+                }
+
+                if (installedColor != newColor) {
+                    ValueAnimator valueAnimator = ValueAnimator.ofArgb(installedColor, newColor);
+                    valueAnimator.setDuration(300);
+                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            mRootView.setBackground(new ColorDrawable((Integer) animation.getAnimatedValue()));
+                        }
+                    });
+                    valueAnimator.start();
+                }
+            }
         }
     }
 }
