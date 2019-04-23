@@ -3,8 +3,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#455A64">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/terminal_root"

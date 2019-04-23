@@ -1,5 +1,6 @@
 package com.simonk.projects.taskmanager.entity;
 
+import java.io.InputStream;
 import java.util.Objects;
 
 public class TerminalCall {
@@ -9,8 +10,10 @@ public class TerminalCall {
     private String responseErrorContent;
     private Exception exception;
 
+    private InputStream responseInputStream;
+
     public String getRequest() {
-        return request;
+        return request.trim();
     }
 
     public void setRequest(String request) {
@@ -23,6 +26,14 @@ public class TerminalCall {
 
     public void setResponseContent(String responseContent) {
         this.responseContent = responseContent;
+    }
+
+    public InputStream getResponseInputStream() {
+        return responseInputStream;
+    }
+
+    public void setResponseInputStream(InputStream inputStream) {
+        this.responseInputStream = inputStream;
     }
 
     public String getResponseErrorContent() {

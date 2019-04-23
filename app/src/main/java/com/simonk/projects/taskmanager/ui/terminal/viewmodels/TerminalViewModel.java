@@ -1,6 +1,8 @@
 package com.simonk.projects.taskmanager.ui.terminal.viewmodels;
 
 import android.app.Application;
+import android.os.HandlerThread;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,6 +12,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.simonk.projects.taskmanager.entity.TerminalCall;
 import com.simonk.projects.taskmanager.terminal.Terminal;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 

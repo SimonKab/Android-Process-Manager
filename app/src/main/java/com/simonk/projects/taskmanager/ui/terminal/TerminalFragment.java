@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -25,6 +26,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.simonk.projects.taskmanager.R;
 import com.simonk.projects.taskmanager.databinding.FragmentTerminalBinding;
 import com.simonk.projects.taskmanager.entity.TerminalCall;
+import com.simonk.projects.taskmanager.ui.MainActivity;
 import com.simonk.projects.taskmanager.ui.terminal.viewmodels.TerminalViewModel;
 
 import java.util.List;
@@ -121,7 +123,7 @@ public class TerminalFragment extends Fragment {
 
     private String convertTerminalRequest(TerminalCall request) {
         if (request.getException() != null) {
-            return "Unknown command";
+            return request.getException().getMessage();
         }
 
         if (request.getResponseErrorContent() != null && !request.getResponseErrorContent().isEmpty()) {
