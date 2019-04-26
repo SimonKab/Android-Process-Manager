@@ -3,6 +3,9 @@ package com.simonk.projects.taskmanager.terminal.handlers;
 import com.simonk.projects.taskmanager.entity.TerminalCall;
 import com.simonk.projects.taskmanager.terminal.Terminal;
 
+import java.io.ByteArrayInputStream;
+
+
 public class PwdCommandHandler extends RequestHandler {
 
     private static final String COMMAND = "pwd";
@@ -14,7 +17,7 @@ public class PwdCommandHandler extends RequestHandler {
 
     @Override
     public void handleRequest(TerminalCall call, Terminal terminal) {
-        //call.setResponseContent(terminal.getCurrentDirectory().getAbsolutePath());
+        call.setResponseInputStream(new ByteArrayInputStream(terminal.getCurrentDirectory().getAbsolutePath().getBytes()));
     }
 
 }

@@ -10,19 +10,18 @@ import androidx.annotation.MainThread;
 import androidx.annotation.WorkerThread;
 
 import com.simonk.projects.taskmanager.entity.TerminalCall;
+import com.simonk.projects.taskmanager.terminal.interceptors.TerminalRequestInterceptor;
+import com.simonk.projects.taskmanager.terminal.interceptors.TopCommandInterceptor;
 import com.simonk.projects.taskmanager.util.ProcessCompat;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TerminalService {
+
+    private static final int BUFFER_SIZE = 4096;
 
     private Terminal mTerminal;
     private TerminalThread mTerminalThread;
@@ -37,7 +36,9 @@ public class TerminalService {
     private static final int REQUEST_INPUT_STARTED = 4;
     private static final int REQUEST_FINISH = 5;
 
-    private static byte[] BUFFER = new byte[4096];
+    private static byte[] BUFFER = new byte[BUFFER_SIZE];
+
+    private List<TerminalRequestInterceptor> mInterceptors;
 
     private boolean mTerminated = true;
 
@@ -47,6 +48,9 @@ public class TerminalService {
         mTerminalThread.start();
         mTerminalHandler = new TerminalHandler(mTerminalThread.getLooper(), this);
         mMainThreadHandler = new MainThreadHandler(Looper.getMainLooper(), this);
+
+        mInterceptors = new ArrayList<>();
+        mInterceptors.add(new TopCommandInterceptor());
     }
 
     @MainThread
@@ -61,36 +65,78 @@ public class TerminalService {
 
     @WorkerThread
     private void performTerminalRequest(TerminalCall terminalCall) {
+        clearBuffer();
         mTerminated = false;
+
         TerminalCall response = mTerminal.makeNewRequest(terminalCall);
 
-        Process process = response.getProcess();
-        while (ProcessCompat.isAlive(process)) {
-            InputStream contentInputStream = response.getResponseInputStream();
-            try {
-                int length = 0;
-                while (length != -1) {
-                    if (mTerminated) {
-                        process.destroy();
-                        stop();
-                        return;
-                    }
-                    length = contentInputStream.read(BUFFER);
-                    mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_INPUT, BUFFER));
-                }
-                mMainThreadHandler.sendEmptyMessage(REQUEST_INPUT_FINISH);
-            } catch (IOException exception) {
-                mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_INPUT_FINISH, exception));
+        TerminalRequestInterceptor requestInterceptor = null;
+        for (TerminalRequestInterceptor interceptor : mInterceptors) {
+            if (interceptor.willIntercept(terminalCall)) {
+                requestInterceptor = interceptor;
+                break;
             }
+        }
+
+        if (response.getProcess() != null) {
+            performProcessWork(response, requestInterceptor);
+        } else {
+            performInputStreamWork(response, requestInterceptor);
         }
 
         stop();
     }
 
+    private void performInputStreamWork(TerminalCall response, TerminalRequestInterceptor requestInterceptor) {
+        InputStream contentInputStream = response.getResponseInputStream();
+        try {
+            int length = 0;
+            while (length != -1) {
+                if (mTerminated) {
+                    stop();
+                    return;
+                }
+                length = contentInputStream.read(BUFFER);
+                if (requestInterceptor != null) {
+                    requestInterceptor.interceptInput(this, response, BUFFER);
+                } else {
+                    dispatchSendInput(BUFFER);
+                }
+            }
+            dispatchSendFinishInput(null);
+        } catch (IOException exception) {
+            dispatchSendFinishInput(exception);
+        }
+    }
+
+    private void performProcessWork(TerminalCall response, TerminalRequestInterceptor requestInterceptor) {
+        Process process = response.getProcess();
+        while (ProcessCompat.isAlive(process)) {
+            performInputStreamWork(response, requestInterceptor);
+            if (mTerminated) {
+                process.destroy();
+                return;
+            }
+        }
+    }
+
+    public void dispatchSendInput(byte[] buffer) {
+        mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_INPUT, buffer));
+    }
+
+    public void dispatchSendFinishInput(Exception exception) {
+        mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_INPUT_FINISH, exception));
+    }
+
+    public void dispatchSendFinish() {
+        mMainThreadHandler.sendEmptyMessage(REQUEST_FINISH);
+    }
+
     @WorkerThread
     private void stop() {
         mTerminated = true;
-        mMainThreadHandler.sendEmptyMessage(REQUEST_FINISH);
+        dispatchSendFinish();
+        clearBuffer();
     }
 
     @MainThread
@@ -119,6 +165,10 @@ public class TerminalService {
         if (mTerminalListener != null) {
             mTerminalListener.onFinished();
         }
+    }
+
+    private void clearBuffer() {
+        BUFFER = new byte[BUFFER_SIZE];
     }
 
     private static class TerminalHandler extends Handler {

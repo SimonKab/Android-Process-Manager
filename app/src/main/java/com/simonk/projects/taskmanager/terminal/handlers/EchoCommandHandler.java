@@ -3,6 +3,8 @@ package com.simonk.projects.taskmanager.terminal.handlers;
 import com.simonk.projects.taskmanager.entity.TerminalCall;
 import com.simonk.projects.taskmanager.terminal.Terminal;
 
+import java.io.ByteArrayInputStream;
+
 public class EchoCommandHandler extends RequestHandler {
 
     private static final String COMMAND = "echo";
@@ -30,7 +32,7 @@ public class EchoCommandHandler extends RequestHandler {
             }
         }
 
-        //call.setResponseContent(responseBuilder.toString());
+        call.setResponseInputStream(new ByteArrayInputStream(responseBuilder.toString().getBytes()));
     }
 
 }

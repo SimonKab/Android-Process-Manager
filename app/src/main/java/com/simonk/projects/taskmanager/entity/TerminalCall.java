@@ -11,6 +11,8 @@ public class TerminalCall {
 
     private Process process;
 
+    private InputStream inputStream;
+
     public String getRequest() {
         return request.trim();
     }
@@ -27,8 +29,12 @@ public class TerminalCall {
         return process;
     }
 
+    public void setResponseInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
     public InputStream getResponseInputStream() {
-        return process.getInputStream();
+        return inputStream == null ? process.getInputStream() : inputStream;
     }
 
     public InputStream getResponseErrorStream() {
