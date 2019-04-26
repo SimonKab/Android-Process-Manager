@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.simonk.projects.taskmanager.entity.TerminalCall;
+import com.simonk.projects.taskmanager.entity.TerminalSnapshot;
 import com.simonk.projects.taskmanager.terminal.StringTerminalListener;
 import com.simonk.projects.taskmanager.terminal.Terminal;
 import com.simonk.projects.taskmanager.terminal.TerminalService;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class TerminalViewModel extends AndroidViewModel {
 
-    private MutableLiveData<List<TerminalCall>> mTerminalRequestArray;
+    private MutableLiveData<List<TerminalSnapshot>> mTerminalSnapshotsArray;
 
     private TerminalService mTerminalService;
 
@@ -30,8 +31,8 @@ public class TerminalViewModel extends AndroidViewModel {
 
         mTerminalService = new TerminalService();
 
-        mTerminalRequestArray = new MutableLiveData<>();
-        mTerminalRequestArray.setValue(new ArrayList<>());
+        mTerminalSnapshotsArray = new MutableLiveData<>();
+        mTerminalSnapshotsArray.setValue(new ArrayList<>());
     }
 
     public void makeNewTerminalRequest(String requestString, StringTerminalListener terminalListener) {
@@ -44,9 +45,11 @@ public class TerminalViewModel extends AndroidViewModel {
         mTerminalService.stopTerminalRequest();
     }
 
-    public LiveData<List<TerminalCall>> getTerminalRequests() {
-        return mTerminalRequestArray;
+    public LiveData<List<TerminalSnapshot>> getTerminalSnapshots() {
+        return mTerminalSnapshotsArray;
     }
 
-
+    public void addTerminalSnapshot(TerminalSnapshot snapshot) {
+        mTerminalSnapshotsArray.getValue().add(snapshot);
+    }
 }

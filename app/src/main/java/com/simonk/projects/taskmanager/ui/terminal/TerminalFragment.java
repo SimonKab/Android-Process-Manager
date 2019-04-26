@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.simonk.projects.taskmanager.R;
 import com.simonk.projects.taskmanager.databinding.FragmentTerminalBinding;
 import com.simonk.projects.taskmanager.entity.TerminalCall;
+import com.simonk.projects.taskmanager.entity.TerminalSnapshot;
 import com.simonk.projects.taskmanager.terminal.StringTerminalListener;
 import com.simonk.projects.taskmanager.ui.MainActivity;
 import com.simonk.projects.taskmanager.ui.terminal.viewmodels.TerminalViewModel;
@@ -60,7 +61,7 @@ public class TerminalFragment extends Fragment {
         });
 
         mViewModel = ViewModelProviders.of(this).get(TerminalViewModel.class);
-        updateUi(mViewModel.getTerminalRequests().getValue());
+        updateUi(mViewModel.getTerminalSnapshots().getValue());
 
         addEditTextLayout(mRootView);
 
@@ -77,25 +78,14 @@ public class TerminalFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void blockAllEditTexts(ViewGroup parent) {
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View child = parent.getChildAt(i);
-            if (child instanceof ViewGroup) {
-                blockAllEditTexts((ViewGroup) child);
-            }
-            if (child instanceof EditText) {
-                child.setEnabled(false);
-            }
-        }
-    }
-
-    private void updateUi(List<TerminalCall> requestList) {
+    private void updateUi(List<TerminalSnapshot> requestList) {
         mRootView.removeAllViews();
-        for (TerminalCall request : requestList) {
+        for (TerminalSnapshot snapshot : requestList) {
             EditText editText = addEditTextLayout(mRootView);
-            editText.setText(request.getRequest());
+            editText.setText(snapshot.getRequest());
             editText.setEnabled(false);
-            //addResponseTextView(convertTerminalRequest(request));
+            TextView textView = addResponseTextView();
+            textView.setText(snapshot.getResponse());
         }
     }
 
@@ -159,9 +149,62 @@ public class TerminalFragment extends Fragment {
 
             @Override
             public void onFinished() {
-                addEditTextLayout(mRootView);
+                finishRequest();
             }
         });
+    }
+
+    private void finishRequest() {
+        mViewModel.addTerminalSnapshot(new TerminalSnapshot(
+                findLastEditText(mRootView).getText().toString(),
+                findLastTextView(mRootView).getText().toString()
+        ));
+        blockAllEditTexts(mRootView);
+        addEditTextLayout(mRootView);
+    }
+
+    private void blockAllEditTexts(ViewGroup parent) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                blockAllEditTexts((ViewGroup) child);
+            }
+            if (child instanceof EditText) {
+                child.setEnabled(false);
+            }
+        }
+    }
+
+    private EditText findLastEditText(ViewGroup parent) {
+        for (int i = parent.getChildCount()-1; i >= 0; i--) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                EditText editText = findLastEditText((ViewGroup) child);
+                if (editText != null) {
+                    return editText;
+                }
+            }
+            if (child instanceof EditText) {
+                return (EditText)child;
+            }
+        }
+        return null;
+    }
+
+    private TextView findLastTextView(ViewGroup parent) {
+        for (int i = parent.getChildCount()-1; i >= 0; i--) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                TextView textView = findLastTextView((ViewGroup) child);
+                if (textView != null) {
+                    return textView;
+                }
+            }
+            if (child instanceof TextView) {
+                return (TextView)child;
+            }
+        }
+        return null;
     }
 
     private TextView addResponseTextView() {
