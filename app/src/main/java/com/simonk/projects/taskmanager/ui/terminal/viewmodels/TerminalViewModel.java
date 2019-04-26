@@ -45,6 +45,11 @@ public class TerminalViewModel extends AndroidViewModel {
         mTerminalService.stopTerminalRequest();
     }
 
+    public void clearTerminalSnapshots() {
+        stopTerminalRequest();
+        mTerminalSnapshotsArray.setValue(new ArrayList<>());
+    }
+
     public LiveData<List<TerminalSnapshot>> getTerminalSnapshots() {
         return mTerminalSnapshotsArray;
     }

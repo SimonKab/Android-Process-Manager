@@ -6,14 +6,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/terminal_stop_button"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stop"
-            android:background="?android:attr/selectableItemBackground"
-            android:textColor="@color/colorPrimary"
-            android:layout_gravity="end"/>
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/terminal_clear_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clear"
+                android:background="?android:attr/selectableItemBackground"
+                android:textColor="@color/colorPrimary"
+                android:layout_gravity="end"/>
+
+            <Button
+                android:id="@+id/terminal_stop_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stop"
+                android:background="?android:attr/selectableItemBackground"
+                android:textColor="@color/colorPrimary" />
+
+        </LinearLayout>
 
         <ScrollView
             android:layout_width="match_parent"

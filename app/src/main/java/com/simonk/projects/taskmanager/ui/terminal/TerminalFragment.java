@@ -41,6 +41,7 @@ public class TerminalFragment extends Fragment {
 
     private ViewGroup mRootView;
     private Button mStopButton;
+    private Button mClearButton;
 
     private TerminalViewModel mViewModel;
 
@@ -53,17 +54,16 @@ public class TerminalFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
         View root = bindingView(inflater, container);
 
-        mStopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViewModel.stopTerminalRequest();
-            }
+        mStopButton.setOnClickListener((v) -> {
+            mViewModel.stopTerminalRequest();
+        });
+
+        mClearButton.setOnClickListener((v) -> {
+            mViewModel.clearTerminalSnapshots();
         });
 
         mViewModel = ViewModelProviders.of(this).get(TerminalViewModel.class);
-        updateUi(mViewModel.getTerminalSnapshots().getValue());
-
-        addEditTextLayout(mRootView);
+        mViewModel.getTerminalSnapshots().observe(this, this::updateUi);
 
         return root;
     }
@@ -74,6 +74,7 @@ public class TerminalFragment extends Fragment {
 
         mRootView = binding.terminalRoot;
         mStopButton = binding.terminalStopButton;
+        mClearButton = binding.terminalClearButton;
 
         return binding.getRoot();
     }
@@ -87,6 +88,7 @@ public class TerminalFragment extends Fragment {
             TextView textView = addResponseTextView();
             textView.setText(snapshot.getResponse());
         }
+        addEditTextLayout(mRootView);
     }
 
     private class TerminalTextWatcher implements TextWatcher {
