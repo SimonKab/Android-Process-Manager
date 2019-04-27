@@ -34,7 +34,10 @@ public class TerminalService {
     private static final int REQUEST_INPUT = 2;
     private static final int REQUEST_INPUT_FINISH = 3;
     private static final int REQUEST_INPUT_STARTED = 4;
-    private static final int REQUEST_FINISH = 5;
+    private static final int REQUEST_ERROR = 5;
+    private static final int REQUEST_ERROR_FINISH = 6;
+    private static final int REQUEST_ERROR_STARTED = 7;
+    private static final int REQUEST_FINISH = 8;
 
     private static byte[] BUFFER = new byte[BUFFER_SIZE];
 
@@ -70,6 +73,11 @@ public class TerminalService {
 
         TerminalCall response = mTerminal.makeNewRequest(terminalCall);
 
+        if (response.getException() != null) {
+            dispatchSendFinish(response.getException());
+            return;
+        }
+
         TerminalRequestInterceptor requestInterceptor = null;
         for (TerminalRequestInterceptor interceptor : mInterceptors) {
             if (interceptor.willIntercept(terminalCall)) {
@@ -89,6 +97,9 @@ public class TerminalService {
 
     private void performInputStreamWork(TerminalCall response, TerminalRequestInterceptor requestInterceptor) {
         InputStream contentInputStream = response.getResponseInputStream();
+        if (contentInputStream == null) {
+            return;
+        }
         try {
             int length = 0;
             while (length != -1) {
@@ -117,6 +128,22 @@ public class TerminalService {
                 process.destroy();
                 return;
             }
+
+            InputStream errorInputStream = response.getResponseErrorStream();
+            try {
+                int length = 0;
+                while (length != -1) {
+                    if (mTerminated) {
+                        stop();
+                        return;
+                    }
+                    length = errorInputStream.read(BUFFER);
+                    dispatchSendInput(BUFFER);
+                }
+                dispatchSendFinishInput(null);
+            } catch (IOException exception) {
+                dispatchSendFinishInput(exception);
+            }
         }
     }
 
@@ -128,14 +155,23 @@ public class TerminalService {
         mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_INPUT_FINISH, exception));
     }
 
-    public void dispatchSendFinish() {
-        mMainThreadHandler.sendEmptyMessage(REQUEST_FINISH);
+    private void dispatchSendError(byte[] buffer) {
+        mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_ERROR, buffer));
     }
+
+    public void dispatchSendFinishError(Exception exception) {
+        mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_ERROR_FINISH, exception));
+    }
+
+    public void dispatchSendFinish(Exception exception) {
+        mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_FINISH, exception));
+    }
+
 
     @WorkerThread
     private void stop() {
         mTerminated = true;
-        dispatchSendFinish();
+        dispatchSendFinish(null);
         clearBuffer();
     }
 
@@ -154,6 +190,27 @@ public class TerminalService {
     }
 
     @MainThread
+    private void dispatchErrorFinished(Exception exception) {
+        if (mTerminalListener != null) {
+            mTerminalListener.onErrorFinished(exception);
+        }
+    }
+
+    @MainThread
+    private void dispatchError(byte[] input) {
+        if (mTerminalListener != null) {
+            mTerminalListener.onError(input);
+        }
+    }
+
+    @MainThread
+    private void dispatchErrorStarted() {
+        if (mTerminalListener != null) {
+            mTerminalListener.onErrorStarted();
+        }
+    }
+
+    @MainThread
     private void dispatchInputFinished(Exception exception) {
         if (mTerminalListener != null) {
             mTerminalListener.onInputFinished(exception);
@@ -161,9 +218,9 @@ public class TerminalService {
     }
 
     @MainThread
-    private void dispatchFinished() {
+    private void dispatchFinished(Exception exception) {
         if (mTerminalListener != null) {
-            mTerminalListener.onFinished();
+            mTerminalListener.onFinished(exception);
         }
     }
 
@@ -210,7 +267,16 @@ public class TerminalService {
                     service.dispatchInputStarted();
                     break;
                 case REQUEST_FINISH:
-                    service.dispatchFinished();
+                    service.dispatchFinished((Exception) msg.obj);
+                    break;
+                case REQUEST_ERROR:
+                    service.dispatchError((byte[]) msg.obj);
+                    break;
+                case REQUEST_ERROR_FINISH:
+                    service.dispatchErrorFinished((Exception) msg.obj);
+                    break;
+                case REQUEST_ERROR_STARTED:
+                    service.dispatchErrorStarted();
                     break;
             }
         }

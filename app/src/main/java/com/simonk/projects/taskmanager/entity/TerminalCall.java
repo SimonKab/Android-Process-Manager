@@ -34,7 +34,9 @@ public class TerminalCall {
     }
 
     public InputStream getResponseInputStream() {
-        return inputStream == null ? process.getInputStream() : inputStream;
+        return inputStream == null
+                ? (process == null ? null : process.getInputStream())
+                : inputStream;
     }
 
     public InputStream getResponseErrorStream() {

@@ -10,9 +10,11 @@ public interface TerminalListener {
 
     void onError(byte[] error);
 
-    void onErrorFinished();
+    void onErrorStarted();
+
+    void onErrorFinished(Exception exception);
 
     byte[] onOutput();
 
-    void onFinished();
+    void onFinished(Exception exception);
 }

@@ -66,7 +66,10 @@ public class Terminal {
             );
             terminalRequest.setProcess(process);
         } catch (Exception e) {
-            terminalRequest.setException(e);
+            terminalRequest.setException(new RuntimeException(
+                    String.format("Command '%s' not found", request),
+                    e
+            ));
         }
         return terminalRequest;
     }

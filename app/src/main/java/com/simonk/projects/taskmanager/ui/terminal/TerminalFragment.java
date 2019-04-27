@@ -5,7 +5,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -111,21 +114,24 @@ public class TerminalFragment extends Fragment {
     }
 
     private void makeTerminalRequest(String request) {
+        blockAllEditTexts(mRootView);
         TextView responseTextView = addResponseTextView();
         mViewModel.makeNewTerminalRequest(request, new StringTerminalListener() {
+
+            private void printAsError(TextView textView, String error) {
+                String text = textView.getText().toString();
+                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
+                spannableStringBuilder.append(error);
+                spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.RED),
+                        text.length(),
+                        text.length()+error.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                textView.setText(spannableStringBuilder);
+            }
+
             @Override
             public void onInput(String input) {
                 responseTextView.setText(input);
-            }
-
-            @Override
-            public void onError(String input) {
-
-            }
-
-            @Override
-            public String onOutputString() {
-                return null;
             }
 
             @Override
@@ -135,16 +141,37 @@ public class TerminalFragment extends Fragment {
 
             @Override
             public void onInputFinished(Exception exception) {
-
+                if (exception != null) {
+                    printAsError(responseTextView, exception.getMessage());
+                }
             }
 
             @Override
-            public void onErrorFinished() {
-
+            public void onError(String input) {
+                printAsError(responseTextView, input);
             }
 
             @Override
-            public void onFinished() {
+            public void onErrorStarted() {
+            }
+
+            @Override
+            public void onErrorFinished(Exception exception) {
+                if (exception != null) {
+                    printAsError(responseTextView, exception.getMessage());
+                }
+            }
+
+            @Override
+            public String onOutputString() {
+                return null;
+            }
+
+            @Override
+            public void onFinished(Exception exception) {
+                if (exception != null) {
+                    printAsError(responseTextView, exception.getMessage());
+                }
                 finishRequest();
             }
         });
