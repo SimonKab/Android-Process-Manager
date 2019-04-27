@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -62,7 +63,13 @@ public class TerminalFragment extends Fragment {
         mViewModel = ViewModelProviders.of(this).get(TerminalViewModel.class);
         mViewModel.getTerminalSnapshots().observe(this, this::updateUi);
 
+
         return root;
+    }
+
+    private void showKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     private View bindingView(LayoutInflater inflater, ViewGroup container) {
@@ -177,6 +184,10 @@ public class TerminalFragment extends Fragment {
         });
     }
 
+    private void sendOutputString(String output) {
+        mViewModel.sendOutputString(output);
+    }
+
     private void finishRequest() {
         mViewModel.addTerminalSnapshot(new TerminalSnapshotEntity(
                 findLastEditText(mRootView).getText().toString(),
@@ -194,6 +205,7 @@ public class TerminalFragment extends Fragment {
             }
             if (child instanceof EditText) {
                 child.setEnabled(false);
+                child.requestFocus();
             }
         }
     }

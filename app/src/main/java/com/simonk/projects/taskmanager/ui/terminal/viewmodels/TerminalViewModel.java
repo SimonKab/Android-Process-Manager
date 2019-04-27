@@ -66,4 +66,8 @@ public class TerminalViewModel extends AndroidViewModel {
         mTerminalSnapshotsArray.getValue().add(snapshot);
         DatabaseManager.insertSnapshot(getApplication(), snapshot);
     }
+
+    public void sendOutputString(String output) {
+        mTerminalService.sendOutputString(output);
+    }
 }

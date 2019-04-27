@@ -38,12 +38,15 @@ public class TerminalService {
     private static final int REQUEST_ERROR_FINISH = 6;
     private static final int REQUEST_ERROR_STARTED = 7;
     private static final int REQUEST_FINISH = 8;
+    private static final int REQUEST_OUTPUT = 9;
 
     private static byte[] BUFFER = new byte[BUFFER_SIZE];
 
     private List<TerminalRequestInterceptor> mInterceptors;
 
     private boolean mTerminated = true;
+
+    private TerminalCall mCurrentTerminalCall;
 
     public TerminalService() {
         mTerminal = new Terminal();
@@ -62,6 +65,11 @@ public class TerminalService {
         mTerminalHandler.sendMessage(mTerminalHandler.obtainMessage(REQUEST_NEW, terminalCall));
     }
 
+    @MainThread
+    public void sendOutputString(String output) {
+
+    }
+
     @MainThread public void stopTerminalRequest() {
         mTerminated = true;
     }
@@ -72,6 +80,7 @@ public class TerminalService {
         mTerminated = false;
 
         TerminalCall response = mTerminal.makeNewRequest(terminalCall);
+        mCurrentTerminalCall = response;
 
         if (response.getException() != null) {
             dispatchSendFinish(response.getException());
@@ -122,28 +131,26 @@ public class TerminalService {
 
     private void performProcessWork(TerminalCall response, TerminalRequestInterceptor requestInterceptor) {
         Process process = response.getProcess();
-        while (ProcessCompat.isAlive(process)) {
-            performInputStreamWork(response, requestInterceptor);
-            if (mTerminated) {
-                process.destroy();
-                return;
-            }
+        performInputStreamWork(response, requestInterceptor);
+        if (mTerminated) {
+            process.destroy();
+            return;
+        }
 
-            InputStream errorInputStream = response.getResponseErrorStream();
-            try {
-                int length = 0;
-                while (length != -1) {
-                    if (mTerminated) {
-                        stop();
-                        return;
-                    }
-                    length = errorInputStream.read(BUFFER);
-                    dispatchSendInput(BUFFER);
+        InputStream errorInputStream = response.getResponseErrorStream();
+        try {
+            int length = 0;
+            while (length != -1) {
+                if (mTerminated) {
+                    stop();
+                    return;
                 }
-                dispatchSendFinishInput(null);
-            } catch (IOException exception) {
-                dispatchSendFinishInput(exception);
+                length = errorInputStream.read(BUFFER);
+                dispatchSendInput(BUFFER);
             }
+            dispatchSendFinishInput(null);
+        } catch (IOException exception) {
+            dispatchSendFinishInput(exception);
         }
     }
 
@@ -167,6 +174,15 @@ public class TerminalService {
         mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(REQUEST_FINISH, exception));
     }
 
+    @WorkerThread
+    private void performOutput(String output) {
+        if (mCurrentTerminalCall != null) {
+            try {
+                mCurrentTerminalCall.getResponseOutputStream().write(output.getBytes());
+            } catch (IOException ignore) {
+            }
+        }
+    }
 
     @WorkerThread
     private void stop() {
@@ -241,6 +257,9 @@ public class TerminalService {
             switch (msg.what) {
                 case REQUEST_NEW:
                     service.performTerminalRequest((TerminalCall) msg.obj);
+                    break;
+                case REQUEST_OUTPUT:
+                    service.performOutput((String) msg.obj);
                     break;
             }
         }
