@@ -1,7 +1,6 @@
 package com.simonk.projects.taskmanager.ui.terminal;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -15,24 +14,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.simonk.projects.taskmanager.R;
+import com.simonk.projects.taskmanager.database.entity.TerminalSnapshotEntity;
 import com.simonk.projects.taskmanager.databinding.FragmentTerminalBinding;
-import com.simonk.projects.taskmanager.entity.TerminalCall;
-import com.simonk.projects.taskmanager.entity.TerminalSnapshot;
 import com.simonk.projects.taskmanager.terminal.StringTerminalListener;
-import com.simonk.projects.taskmanager.ui.MainActivity;
 import com.simonk.projects.taskmanager.ui.terminal.viewmodels.TerminalViewModel;
 
 import java.util.List;
@@ -79,14 +73,14 @@ public class TerminalFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void updateUi(List<TerminalSnapshot> requestList) {
+    private void updateUi(List<TerminalSnapshotEntity> requestList) {
         mRootView.removeAllViews();
-        for (TerminalSnapshot snapshot : requestList) {
+        for (TerminalSnapshotEntity snapshot : requestList) {
             EditText editText = addEditTextLayout(mRootView);
-            editText.setText(snapshot.getRequest());
+            editText.setText(snapshot.request);
             editText.setEnabled(false);
             TextView textView = addResponseTextView();
-            textView.setText(snapshot.getResponse());
+            textView.setText(snapshot.response);
         }
         addEditTextLayout(mRootView);
     }
@@ -157,7 +151,7 @@ public class TerminalFragment extends Fragment {
     }
 
     private void finishRequest() {
-        mViewModel.addTerminalSnapshot(new TerminalSnapshot(
+        mViewModel.addTerminalSnapshot(new TerminalSnapshotEntity(
                 findLastEditText(mRootView).getText().toString(),
                 findLastTextView(mRootView).getText().toString()
         ));
