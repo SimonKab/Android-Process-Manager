@@ -293,6 +293,14 @@ public class TerminalFragment extends Fragment {
         editTextLayout.addView(signTextView);
         editTextLayout.addView(terminalEditText);
 
+        editTextLayout.setOnClickListener((v) -> {
+            String text = ((EditText)((ViewGroup)v).getChildAt(1)).getText().toString();
+            EditText lastEditText = findLastEditText(mRootView);
+            if (lastEditText != v && lastEditText.isEnabled()) {
+                lastEditText.setText(text);
+            }
+        });
+
         parent.addView(devider);
         parent.addView(editTextLayout);
 
