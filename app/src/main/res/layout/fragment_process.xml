@@ -11,13 +11,14 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:contentScrim="?attr/colorPrimary"
                 app:expandedTitleGravity="top"
+                android:background="@android:color/transparent"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
