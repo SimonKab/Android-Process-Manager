@@ -34,6 +34,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.simonk.projects.taskmanager.entity.ProcessInfo;
 import com.simonk.projects.taskmanager.repository.ProcessRepository;
+import com.simonk.projects.taskmanager.ui.blacklist.BlacklistFragment;
 import com.simonk.projects.taskmanager.ui.process.ChangeDetailsDialog;
 import com.simonk.projects.taskmanager.ui.process.CleanedDialog;
 import com.simonk.projects.taskmanager.ui.process.ProcessFragment;
@@ -76,7 +77,7 @@ public class MainActivity extends BindingActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), getBinding().coordinator);
         adapter.addFragment(ProcessFragment.newInstance(),
                 "Apps");
-        adapter.addFragment(ProcessFragment.newInstance(),
+        adapter.addFragment(BlacklistFragment.newInstance(),
                 "BlackList");
         adapter.addFragment(TerminalFragment.newInstance(),
                 "Terminal");

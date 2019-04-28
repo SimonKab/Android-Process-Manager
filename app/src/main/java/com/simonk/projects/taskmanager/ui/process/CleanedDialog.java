@@ -43,7 +43,7 @@ public class CleanedDialog extends DialogFragment {
         float beforeAvailMemory = MemoryUtils.getAvailableMemory(memInfo);
         ((TextView)root.findViewById(R.id.before_memory)).setText("Before cleaning: " + beforeAvailMemory + "G");
 
-        new ProcessRepository().getAllProcessInfo(requireContext());
+        new ProcessRepository().killAllProcesses(requireContext());
 
         memInfo = MemoryUtils.getMemoryInfo(requireContext());
         float afterAvailMemory = MemoryUtils.getAvailableMemory(memInfo);
