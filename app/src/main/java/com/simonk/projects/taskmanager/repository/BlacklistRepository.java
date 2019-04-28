@@ -4,7 +4,16 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.Transformations;
+import androidx.room.Database;
+
+import com.simonk.projects.taskmanager.database.DatabaseManager;
+import com.simonk.projects.taskmanager.database.entity.BlacklistEntity;
 import com.simonk.projects.taskmanager.entity.AppInfo;
 import com.simonk.projects.taskmanager.entity.ProcessInfo;
 
@@ -20,25 +29,63 @@ public class BlacklistRepository {
         List<AppInfo> appInfoList = new ArrayList<>();
         for (ApplicationInfo info : installedApplications) {
             AppInfo appInfo = new AppInfo();
-            try {
-                ApplicationInfo applicationInfo =
-                        packageManager.getApplicationInfo(info.processName, 0);
-                appInfo.setText(packageManager.getApplicationLabel(applicationInfo).toString());
-                appInfo.setImage(packageManager.getApplicationIcon(applicationInfo));
-                appInfo.setPpackage(info.processName);
-                appInfo.setEnabled(applicationInfo.enabled);
-                boolean isSystem = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-                if (isSystem && notSystem) {
-                    continue;
-                }
-                appInfo.setIsSystem(isSystem);
-            } catch (PackageManager.NameNotFoundException e) {
+            appInfo.setText(packageManager.getApplicationLabel(info).toString());
+            appInfo.setImage(packageManager.getApplicationIcon(info));
+            appInfo.setPpackage(info.processName);
+            appInfo.setEnabled(info.enabled);
+            appInfo.setInBlacklist(false);
+            boolean isSystem = (info.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+            if (isSystem && notSystem) {
                 continue;
             }
+            appInfo.setIsSystem(isSystem);
+
+            if (appInfo.getPpackage().contains(context.getPackageName())) {
+                continue;
+            }
+
             appInfoList.add(appInfo);
         }
 
         return appInfoList;
     }
 
+    public LiveData<List<AppInfo>> getAllBlacklistApplicationInfo(Context context) {
+        LiveData<List<BlacklistEntity>> blacklistEntitiesData = DatabaseManager.loadBlacklistEntities(context);
+        return Transformations.map(blacklistEntitiesData, blacklistEntities -> {
+            List<AppInfo> appInfoList = new ArrayList<>();
+            PackageManager packageManager = context.getPackageManager();
+            for (BlacklistEntity entity : blacklistEntities) {
+                ApplicationInfo info = null;
+                try {
+                    info = packageManager.getApplicationInfo(entity.apppackage, PackageManager.GET_META_DATA);
+                } catch (PackageManager.NameNotFoundException exception) {
+                    continue;
+                }
+                AppInfo appInfo = new AppInfo();
+                appInfo.setText(packageManager.getApplicationLabel(info).toString());
+                appInfo.setImage(packageManager.getApplicationIcon(info));
+                appInfo.setPpackage(info.processName);
+                appInfo.setEnabled(info.enabled);
+                appInfo.setIsSystem((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
+                appInfo.setInBlacklist(true);
+
+                appInfoList.add(appInfo);
+            }
+
+            return appInfoList;
+        });
+    }
+
+    public void insertAppInBlacklist(Context context, AppInfo appInfo) {
+        BlacklistEntity blacklistEntity = new BlacklistEntity();
+        blacklistEntity.apppackage = appInfo.getPpackage();
+        DatabaseManager.insertBlacklistEntity(context, blacklistEntity);
+    }
+
+    public void deleteAppFromBlackList(Context context, AppInfo appInfo) {
+        BlacklistEntity blacklistEntity = new BlacklistEntity();
+        blacklistEntity.apppackage = appInfo.getPpackage();
+        DatabaseManager.deleteBlacklistEntityByPackage(context, blacklistEntity.apppackage);
+    }
 }

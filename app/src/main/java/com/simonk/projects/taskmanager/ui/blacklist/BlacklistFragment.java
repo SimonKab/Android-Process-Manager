@@ -19,6 +19,7 @@ import com.simonk.projects.taskmanager.entity.AppInfo;
 import com.simonk.projects.taskmanager.ui.blacklist.viewmodels.BlacklistViewModel;
 import com.simonk.projects.taskmanager.ui.process.ProcessFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BlacklistFragment extends Fragment {
@@ -45,7 +46,19 @@ public class BlacklistFragment extends Fragment {
         mBlackListAdapter = new BlackListAdapter();
         mBlacklistRecyclerView.setAdapter(mBlackListAdapter);
 
-        mViewModel.getAllAppsInfo().observe(this, this::updateAllAppsInfo);
+        mBlackListAdapter.setItemBlockListener(new BlackListAdapter.BlacklistAdapterViewHolder.OnBlockListener() {
+            @Override
+            public void onBlock(AppInfo appInfo) {
+                mViewModel.insertAppInBlacklist(appInfo);
+            }
+
+            @Override
+            public void onRemove(AppInfo appInfo) {
+                mViewModel.deleteAppFromBlackList(appInfo);
+            }
+        });
+
+        mViewModel.getAppsInfo().observe(this, this::updateAppsInfo);
 
         return root;
     }
@@ -59,9 +72,16 @@ public class BlacklistFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void updateAllAppsInfo(List<AppInfo> allAppsInfoList) {
+    private void updateAppsInfo(BlacklistViewModel.AppsInfoList appsInfoList) {
+        List<AppInfo> infoList = new ArrayList<>();
+        if (appsInfoList.allApps != null) {
+            infoList.addAll(appsInfoList.allApps);
+        }
+        if (appsInfoList.blacklistApps != null) {
+            infoList.addAll(appsInfoList.blacklistApps);
+        }
         mBlackListAdapter.resolveActionChange(() -> {
-            mBlackListAdapter.setAppInfoList(allAppsInfoList);
+            mBlackListAdapter.setAppInfoList(infoList);
         });
     }
 }

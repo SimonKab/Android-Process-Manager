@@ -3,6 +3,7 @@ package com.simonk.projects.taskmanager.ui.blacklist;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.AdapterDataHolder, RecyclerView.ViewHolder> {
 
     private BlacklistAdapterViewHolder.OnClickListener mItemClickListener;
+    private BlacklistAdapterViewHolder.OnBlockListener mItemBlockListener;
 
     private static final int BLACK_ITEM_TYPE = 1;
     private static final int ALL_ITEM_TYPE = 2;
@@ -39,22 +41,15 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
     }
 
     public void setAppInfoList(List<AppInfo> items) {
-        Collections.sort(items, (o1, o2) ->
-                Boolean.compare(o1.isInBlacklist(), o2.isInBlacklist())
-        );
         List<AdapterDataHolder> adapterDataHolderList = new ArrayList<>();
 
         AdapterDataHolder blacklistLabel = new AdapterDataHolder(null);
         blacklistLabel.isBlacklistLabel = true;
         adapterDataHolderList.add(blacklistLabel);
 
-        int i = 0;
-        for (; i < items.size(); i++) {
-            AppInfo appInfo = items.get(i);
+        for (AppInfo appInfo : items) {
             if (appInfo.isInBlacklist()) {
                 adapterDataHolderList.add(new AdapterDataHolder(appInfo));
-            } else {
-                break;
             }
         }
 
@@ -62,8 +57,10 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
         allAppsLabel.isAllAppsLabel = true;
         adapterDataHolderList.add(allAppsLabel);
 
-        for (; i < items.size(); i++) {
-            adapterDataHolderList.add(new AdapterDataHolder(items.get(i)));
+        for (AppInfo appInfo : items) {
+            if (!appInfo.isInBlacklist()) {
+                adapterDataHolderList.add(new AdapterDataHolder(appInfo));
+            }
         }
 
         setItemsList(adapterDataHolderList);
@@ -75,7 +72,7 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == BLACK_ITEM_TYPE || viewType == ALL_ITEM_TYPE) {
             View v = inflater.inflate(R.layout.blacklist_item, parent, false);
-            return new BlacklistAdapterViewHolder(v, mItemClickListener);
+            return new BlacklistAdapterViewHolder(v, mItemClickListener, mItemBlockListener);
         }
         if (viewType == BLACK_LABEL_ITEM_TYPE) {
             TextView label = (TextView) inflater.inflate(R.layout.blacklist_item_label, parent, false);
@@ -116,24 +113,39 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
         mItemClickListener = onClickListener;
     }
 
+    public void setItemBlockListener(BlacklistAdapterViewHolder.OnBlockListener onBlockListener) {
+        mItemBlockListener = onBlockListener;
+    }
+
     public static class BlacklistAdapterViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mName;
         private ImageView mImage;
         private TextView mPackage;
+        private Button mActionButton;
 
         private AppInfo mItem;
+
+        private OnBlockListener mOnBlockListener;
 
         public interface OnClickListener {
             void onClick(View v, AppInfo ppackage);
             boolean onLongClick(AppInfo info);
         }
 
-        public BlacklistAdapterViewHolder(@NonNull View itemView, OnClickListener onClickListener) {
+        public interface OnBlockListener {
+            void onBlock(AppInfo appInfo);
+            void onRemove(AppInfo appInfo);
+        }
+
+        public BlacklistAdapterViewHolder(@NonNull View itemView,
+                                          OnClickListener onClickListener,
+                                          OnBlockListener onBlockListener) {
             super(itemView);
             mName = itemView.findViewById(R.id.blacklist_item_text);
             mImage = itemView.findViewById(R.id.blacklist_item_logo);
             mPackage = itemView.findViewById(R.id.blacklist_item_package);
+            mActionButton = itemView.findViewById(R.id.blacklist_action);
             itemView.setOnClickListener(v -> {
                 if (onClickListener != null) {
                     onClickListener.onClick(v, mItem);
@@ -145,6 +157,7 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
                 }
                 return false;
             });
+            mOnBlockListener = onBlockListener;
         }
 
         public void bind(AppInfo info) {
@@ -152,6 +165,21 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
             mName.setText(info.getText());
             mImage.setImageDrawable(info.getImage());
             mPackage.setText(info.getPpackage());
+            if (info.isInBlacklist()) {
+                mActionButton.setText("Remove");
+                mActionButton.setOnClickListener((v) -> {
+                    if (mOnBlockListener != null) {
+                        mOnBlockListener.onRemove(mItem);
+                    }
+                });
+            } else {
+                mActionButton.setText("Block");
+                mActionButton.setOnClickListener((v) -> {
+                    if (mOnBlockListener != null) {
+                        mOnBlockListener.onBlock(mItem);
+                    }
+                });
+            }
         }
     }
 
