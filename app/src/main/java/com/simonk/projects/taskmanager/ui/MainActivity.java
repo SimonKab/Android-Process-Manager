@@ -118,6 +118,11 @@ public class MainActivity extends BindingActivity {
         @Override
         public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             super.setPrimaryItem(container, position, object);
+            if (object instanceof TerminalFragment) {
+                ((TerminalFragment) object).setCurrent(true);
+            } else {
+                ((TerminalFragment) mFragmentList.get(2)).setCurrent(false);
+            }
             if (mRootView.getBackground() instanceof ColorDrawable) {
                 int installedColor = ((ColorDrawable) mRootView.getBackground()).getColor();
                 int newColor = installedColor;

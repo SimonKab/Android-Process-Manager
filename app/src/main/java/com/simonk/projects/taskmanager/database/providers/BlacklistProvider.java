@@ -42,4 +42,7 @@ public interface BlacklistProvider {
     @Query("DELETE FROM blacklist")
     void clearBlacklistEntities();
 
+    @Query("UPDATE blacklist SET lastOpenDate = :openDate WHERE apppackage=:ppackage")
+    void updateBlacklistEntityOpenDate(String ppackage, long openDate);
+
 }

@@ -62,4 +62,14 @@ public class DatabaseManager {
         thread.setName("TaskManager-Database");
         thread.start();
     }
+
+    public static void updateBlacklistEntityOpenDate(Context context, String ppackage, long openDate) {
+        Thread thread = new Thread(() -> {
+            LocalDatabase.getInstance(context)
+                    .blacklistProvider()
+                    .updateBlacklistEntityOpenDate(ppackage, openDate);
+        });
+        thread.setName("TaskManager-Database");
+        thread.start();
+    }
 }

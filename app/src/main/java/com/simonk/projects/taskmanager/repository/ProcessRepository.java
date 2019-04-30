@@ -45,6 +45,40 @@ public class ProcessRepository {
         return processInfoList;
     }
 
+    public ProcessInfo getRunningProcessInfoForPackage(Context context, String packageName) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
+                = activityManager.getRunningAppProcesses();
+
+        PackageManager packageManager = context.getPackageManager();
+
+        for (ActivityManager.RunningAppProcessInfo info : runningAppProcessInfos) {
+            if (info.processName.equals(packageName)) {
+                ProcessInfo processInfo = new ProcessInfo();
+                try {
+                    ApplicationInfo applicationInfo =
+                            packageManager.getApplicationInfo(info.processName, 0);
+                    processInfo.setText(packageManager.getApplicationLabel(applicationInfo).toString());
+                    processInfo.setImage(packageManager.getApplicationIcon(applicationInfo));
+                    processInfo.setPpackage(info.processName);
+                    processInfo.setPriority(info.importance);
+                    processInfo.setStatus(applicationInfo.enabled);
+                    processInfo.setMinSdk(applicationInfo.targetSdkVersion);
+                    processInfo.setUid(applicationInfo.uid);
+                    processInfo.setDescription(applicationInfo.descriptionRes != 0
+                            ? context.getResources().getString(applicationInfo.descriptionRes)
+                            : "");
+                    processInfo.setPid(info.pid);
+                } catch (PackageManager.NameNotFoundException e) {
+                    return null;
+                }
+                return processInfo;
+            }
+        }
+
+        return null;
+    }
+
     public void killProcess(Context context, ProcessInfo processInfo) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 

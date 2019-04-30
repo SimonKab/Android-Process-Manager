@@ -12,6 +12,7 @@ public class AppInfo {
     private boolean isEnabled;
     private boolean isSystem;
     private boolean isInBlacklist;
+    private long lastOpenDate;
 
     public String getText() {
         return text;
@@ -61,4 +62,11 @@ public class AppInfo {
         isInBlacklist = inBlacklist;
     }
 
+    public long getLastOpenDate() {
+        return lastOpenDate;
+    }
+
+    public void setLastOpenDate(long lastOpenDate) {
+        this.lastOpenDate = lastOpenDate;
+    }
 }

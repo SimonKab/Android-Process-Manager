@@ -69,6 +69,7 @@ public class BlacklistRepository {
                 appInfo.setEnabled(info.enabled);
                 appInfo.setIsSystem((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
                 appInfo.setInBlacklist(true);
+                appInfo.setLastOpenDate(entity.lastOpenDate);
 
                 appInfoList.add(appInfo);
             }
@@ -80,12 +81,18 @@ public class BlacklistRepository {
     public void insertAppInBlacklist(Context context, AppInfo appInfo) {
         BlacklistEntity blacklistEntity = new BlacklistEntity();
         blacklistEntity.apppackage = appInfo.getPpackage();
+        blacklistEntity.lastOpenDate = appInfo.getLastOpenDate();
         DatabaseManager.insertBlacklistEntity(context, blacklistEntity);
     }
 
     public void deleteAppFromBlackList(Context context, AppInfo appInfo) {
         BlacklistEntity blacklistEntity = new BlacklistEntity();
         blacklistEntity.apppackage = appInfo.getPpackage();
+        blacklistEntity.lastOpenDate = appInfo.getLastOpenDate();
         DatabaseManager.deleteBlacklistEntityByPackage(context, blacklistEntity.apppackage);
+    }
+
+    public void setBlacklistAppOpenDate(Context context, AppInfo appInfo, long openDate) {
+        DatabaseManager.updateBlacklistEntityOpenDate(context, appInfo.getPpackage(), openDate);
     }
 }

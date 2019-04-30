@@ -16,7 +16,9 @@ import com.simonk.projects.taskmanager.entity.ProcessInfo;
 import com.simonk.projects.taskmanager.ui.process.ProcessAdapter;
 import com.simonk.projects.taskmanager.ui.util.ObjectListAdapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -123,6 +125,7 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
         private ImageView mImage;
         private TextView mPackage;
         private Button mActionButton;
+        private TextView mLastOpenDate;
 
         private AppInfo mItem;
 
@@ -146,6 +149,7 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
             mImage = itemView.findViewById(R.id.blacklist_item_logo);
             mPackage = itemView.findViewById(R.id.blacklist_item_package);
             mActionButton = itemView.findViewById(R.id.blacklist_action);
+            mLastOpenDate = itemView.findViewById(R.id.blacklist_last_open);
             itemView.setOnClickListener(v -> {
                 if (onClickListener != null) {
                     onClickListener.onClick(v, mItem);
@@ -179,6 +183,15 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
                         mOnBlockListener.onBlock(mItem);
                     }
                 });
+            }
+            if (info.getLastOpenDate() != 0) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(info.getLastOpenDate());
+                String date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(calendar.getTime());
+                mLastOpenDate.setVisibility(View.VISIBLE);
+                mLastOpenDate.setText("Last open date: " + date);
+            } else {
+                mLastOpenDate.setVisibility(View.GONE);
             }
         }
     }

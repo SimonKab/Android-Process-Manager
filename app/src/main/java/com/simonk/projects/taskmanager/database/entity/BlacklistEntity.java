@@ -10,5 +10,5 @@ public class BlacklistEntity {
     public int id;
 
     public String apppackage;
-
+    public long lastOpenDate;
 }

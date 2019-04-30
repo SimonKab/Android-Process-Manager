@@ -1,5 +1,9 @@
 package com.simonk.projects.taskmanager.ui.blacklist;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +20,7 @@ import com.simonk.projects.taskmanager.R;
 import com.simonk.projects.taskmanager.databinding.FragmentBlacklistBinding;
 import com.simonk.projects.taskmanager.databinding.FragmentProcessBinding;
 import com.simonk.projects.taskmanager.entity.AppInfo;
+import com.simonk.projects.taskmanager.services.blacklist.BlacklistJobService;
 import com.simonk.projects.taskmanager.ui.blacklist.viewmodels.BlacklistViewModel;
 import com.simonk.projects.taskmanager.ui.process.ProcessFragment;
 
@@ -23,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlacklistFragment extends Fragment {
+
+    private static final int JOB_SCHEDULE_ID = 1000;
 
     private RecyclerView mBlacklistRecyclerView;
 
@@ -58,6 +65,8 @@ public class BlacklistFragment extends Fragment {
             }
         });
 
+        runBlacklistScheduler();
+
         mViewModel.getAppsInfo().observe(this, this::updateAppsInfo);
 
         return root;
@@ -83,5 +92,14 @@ public class BlacklistFragment extends Fragment {
         mBlackListAdapter.resolveActionChange(() -> {
             mBlackListAdapter.setAppInfoList(infoList);
         });
+    }
+
+    private void runBlacklistScheduler() {
+        JobScheduler jobScheduler =
+                (JobScheduler) requireContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(new JobInfo.Builder(JOB_SCHEDULE_ID,
+                new ComponentName(requireContext(), BlacklistJobService.class))
+                .setPeriodic(10*1000)
+                .build());
     }
 }
