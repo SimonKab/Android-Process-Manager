@@ -15,7 +15,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -43,6 +42,8 @@ public class TerminalFragment extends Fragment {
 
     private TerminalViewModel mViewModel;
 
+    private boolean mCanRequestFocus = true;
+
     public static TerminalFragment newInstance() {
         TerminalFragment fragment = new TerminalFragment();
         return fragment;
@@ -67,9 +68,8 @@ public class TerminalFragment extends Fragment {
         return root;
     }
 
-    private void showKeyboard() {
-        InputMethodManager inputManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+    public void setCurrent(boolean current) {
+        mCanRequestFocus = current;
     }
 
     private View bindingView(LayoutInflater inflater, ViewGroup container) {
@@ -205,7 +205,9 @@ public class TerminalFragment extends Fragment {
             }
             if (child instanceof EditText) {
                 child.setEnabled(false);
-                child.requestFocus();
+                if (mCanRequestFocus) {
+                    child.requestFocus();
+                }
             }
         }
     }
@@ -274,7 +276,9 @@ public class TerminalFragment extends Fragment {
         terminalEditText.setBackground(null);
         terminalEditText.setTextColor(Color.parseColor("#FFFFFF"));
 
-        terminalEditText.requestFocus();
+        if (mCanRequestFocus) {
+            terminalEditText.requestFocus();
+        }
 
         SignTextView signTextView = new SignTextView(requireContext());
 

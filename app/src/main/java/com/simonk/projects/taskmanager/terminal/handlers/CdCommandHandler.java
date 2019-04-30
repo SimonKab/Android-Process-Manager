@@ -17,6 +17,9 @@ public class CdCommandHandler extends RequestHandler {
     @Override
     public void handleRequest(TerminalCall call, Terminal terminal) {
         String request = call.getRequest();
+        if (request.length() == 2) {
+            return;
+        }
         String newPath = request.substring(3); // remove 'cd ' part from request
 
         if (newPath.isEmpty()) {

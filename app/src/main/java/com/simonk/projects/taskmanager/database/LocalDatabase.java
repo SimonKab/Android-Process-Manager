@@ -5,10 +5,12 @@ import android.content.Context;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.simonk.projects.taskmanager.database.entity.BlacklistEntity;
 import com.simonk.projects.taskmanager.database.entity.TerminalSnapshotEntity;
+import com.simonk.projects.taskmanager.database.providers.BlacklistProvider;
 import com.simonk.projects.taskmanager.database.providers.TerminalSnapshotProvider;
 
-@androidx.room.Database(entities = {TerminalSnapshotEntity.class}, version = 1, exportSchema = false)
+@androidx.room.Database(entities = {TerminalSnapshotEntity.class, BlacklistEntity.class}, version = 1, exportSchema = false)
 public abstract class LocalDatabase extends RoomDatabase {
 
     private static LocalDatabase sInstance;
@@ -16,6 +18,7 @@ public abstract class LocalDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "TaskManagerDatabase";
 
     public abstract TerminalSnapshotProvider terminalSnapshotProvider();
+    public abstract BlacklistProvider blacklistProvider();
 
     public static LocalDatabase getInstance(final Context context) {
         if (sInstance == null) {
