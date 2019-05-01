@@ -1,3 +1,34 @@
 <resources>
     <string name="app_name">TaskManager</string>
+
+    <string name="blacklist_label">Blacklist:</string>
+    <string name="all_apps_label">All apps:</string>
+    <string name="remove">Remove</string>
+    <string name="block">Block</string>
+    <string name="last_open_date">Last open date: %s</string>
+    <string name="notify_title">Blacklist application is running!</string>
+    <string name="notify_content">Application with name %s is running but it\'s not should be</string>
+    <string name="before_cleaning">Before cleaning: %fG</string>
+    <string name="after_cleaning">After cleaning: %fG</string>
+    <string name="apps">Apps</string>
+    <string name="blacklist">Blacklist</string>
+    <string name="terminal">Terminal</string>
+
+    <string name="priority">Priority: %s</string>
+    <string name="enabled">Enabled: %s</string>
+    <string name="uid">Uid: %s</string>
+    <string name="target_sdk">Target sdk: %s</string>
+    <string name="description">Description: %s</string>
+
+    <string name="priority_label">Priority</string>
+    <string name="note">Note</string>
+
+    <string name="all_memory">All memory: </string>
+    <string name="free_memory">Free memory: </string>
+    <string name="clear_all">Clear all</string>
+
+    <string name="clear">Clear</string>
+    <string name="stop">Stop</string>
+
+    <string name="kill">Kill</string>
 </resources>

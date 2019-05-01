@@ -76,11 +76,11 @@ public class MainActivity extends BindingActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), getBinding().coordinator);
         adapter.addFragment(ProcessFragment.newInstance(),
-                "Apps");
+                getString(R.string.apps));
         adapter.addFragment(BlacklistFragment.newInstance(),
-                "BlackList");
+                getString(R.string.blacklist));
         adapter.addFragment(TerminalFragment.newInstance(),
-                "Terminal");
+                getString(R.string.terminal));
         viewPager.setAdapter(adapter);
     }
 

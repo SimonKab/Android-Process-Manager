@@ -62,10 +62,10 @@ public class BlacklistJobService extends JobService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.ic_launcher_background)
                 .setColor(getResources().getColor(R.color.colorPrimary))
-                .setContentTitle("Blacklist application is running!")
+                .setContentTitle(getApplicationContext().getString(R.string.notify_title))
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .setContentText(String.format("Application with name %s is running but it's not should be", appInfo.getText()))
+                .setContentText(String.format(getApplicationContext().getString(R.string.notify_content), appInfo.getText()))
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_MAX);
 
