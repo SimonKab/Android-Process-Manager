@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">TaskManager</string>
+
+    <string name="blacklist_label">Черный список:</string>
+    <string name="all_apps_label">Все приложения:</string>
+    <string name="remove">Убрать</string>
+    <string name="block">Заблокировать</string>
+    <string name="last_open_date">Последнее время открытия: %s</string>
+    <string name="notify_title">Прилоежение из черного списка запущено!</string>
+    <string name="notify_content">Приложение из черного списка с названием %s запущено</string>
+    <string name="before_cleaning">Перед чисткой: %fG</string>
+    <string name="after_cleaning">После чистки: %fG</string>
+
+    <string name="apps">Приложения</string>
+    <string name="blacklist">Черный список</string>
+    <string name="terminal">Терминал</string>
+
+    <string name="priority">Приоритет: %s</string>
+    <string name="enabled">Включено: %s</string>
+    <string name="uid">Uid: %s</string>
+    <string name="target_sdk">Целевой sdk: %s</string>
+    <string name="description">Описание: %s</string>
+
+    <string name="priority_label">Приоритет</string>
+    <string name="note">Запись</string>
+
+    <string name="all_memory">Всего ОЗУ: </string>
+    <string name="free_memory">Свободно ОЗУ: </string>
+    <string name="clear_all">Отчистить</string>
+
+    <string name="clear">Отчистить</string>
+    <string name="stop">Остановить</string>
+
+    <string name="kill">Завершить</string>
+</resources>
