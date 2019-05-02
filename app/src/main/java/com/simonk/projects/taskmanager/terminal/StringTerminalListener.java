@@ -1,5 +1,8 @@
 package com.simonk.projects.taskmanager.terminal;
 
+/**
+ * Util class handles byte array to string transformations
+ */
 public abstract class StringTerminalListener implements TerminalListener {
 
     public abstract void onInput(String input);

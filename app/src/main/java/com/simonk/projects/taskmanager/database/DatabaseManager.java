@@ -9,6 +9,15 @@ import com.simonk.projects.taskmanager.database.entity.TerminalSnapshotEntity;
 
 import java.util.List;
 
+/**
+ * Makes using LocalDatabase easier. You can still work with LocalDatabase by yourself,
+ * this class only help you avoid long method calls
+ *
+ * Provide multithreading for insert, update, delete operations
+ *
+ * TODO: work with threads using thread pool executor
+ *
+ */
 public class DatabaseManager {
 
     public static LiveData<List<TerminalSnapshotEntity>> loadSnapshots(Context context) {

@@ -24,6 +24,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Class represents terminal of Android shell. Let you make requests and change system settings
+ *
+ * Note: all request is synchronized
+ */
 public class Terminal {
 
     private File mCurrentDirectory;
@@ -48,6 +53,11 @@ public class Terminal {
         mRequestHandlers.add(new ExportCommandHandler());
     }
 
+    /**
+     * Perform request to terminal. Uses only request filed in provided terminalRequest
+     * @param terminalRequest
+     * @return complete call with request and corresponding response
+     */
     public TerminalCall makeNewRequest(TerminalCall terminalRequest) {
         String request = terminalRequest.getRequest().trim();
 
@@ -74,6 +84,10 @@ public class Terminal {
         return terminalRequest;
     }
 
+    /**
+     * Sets current working directory to terminal. Works like cd command
+     * @param currentDirectory
+     */
     public void setCurrentDirectory(File currentDirectory) {
         mCurrentDirectory = currentDirectory;
     }
@@ -82,6 +96,11 @@ public class Terminal {
         return mCurrentDirectory;
     }
 
+    /**
+     * Sets environment variables to terminal. Works like export command
+     * @param name
+     * @param data
+     */
     public void addEnvironmentVar(String name, String data) {
         mEnvironmentVars.put(name, data);
     }

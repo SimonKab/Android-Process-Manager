@@ -4,6 +4,9 @@ import android.graphics.drawable.Drawable;
 
 import java.util.Objects;
 
+/**
+ * POJO represents usefull for this app information about other apps.
+ */
 public class AppInfo {
 
     private String text;

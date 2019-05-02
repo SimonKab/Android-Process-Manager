@@ -20,8 +20,25 @@ import com.simonk.projects.taskmanager.entity.ProcessInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository for blacklist. Provides base functions for work with blacklist
+ * Retrieves information from different sources: system's PackageManager and local database
+ */
 public class BlacklistRepository {
 
+    /**
+     * Returns all installed on device apps. Uses system's PackageManager
+     *
+     * All returned apps supposed to be not in black list
+     *
+     * Note: not returns current application in list
+     *
+     * TODO: perform logic in separated thread with LiveData
+     *
+     * @param context
+     * @param notSystem if true all system applications will be ignored
+     * @return list of applications
+     */
     public List<AppInfo> getAllInstalledApplicationsInfo(Context context, boolean notSystem) {
         PackageManager packageManager = context.getPackageManager();
         List<ApplicationInfo> installedApplications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
@@ -50,6 +67,11 @@ public class BlacklistRepository {
         return appInfoList;
     }
 
+    /**
+     * Returns LiveData of blacklist retrieved from database
+     * @param context
+     * @return
+     */
     public LiveData<List<AppInfo>> getAllBlacklistApplicationInfo(Context context) {
         LiveData<List<BlacklistEntity>> blacklistEntitiesData = DatabaseManager.loadBlacklistEntities(context);
         return Transformations.map(blacklistEntitiesData, blacklistEntities -> {
@@ -78,6 +100,11 @@ public class BlacklistRepository {
         });
     }
 
+    /**
+     * Insert an application to blacklist
+     * @param context
+     * @param appInfo
+     */
     public void insertAppInBlacklist(Context context, AppInfo appInfo) {
         BlacklistEntity blacklistEntity = new BlacklistEntity();
         blacklistEntity.apppackage = appInfo.getPpackage();
@@ -85,6 +112,11 @@ public class BlacklistRepository {
         DatabaseManager.insertBlacklistEntity(context, blacklistEntity);
     }
 
+    /**
+     * Delete an application from blacklsit
+     * @param context
+     * @param appInfo
+     */
     public void deleteAppFromBlackList(Context context, AppInfo appInfo) {
         BlacklistEntity blacklistEntity = new BlacklistEntity();
         blacklistEntity.apppackage = appInfo.getPpackage();
@@ -92,6 +124,12 @@ public class BlacklistRepository {
         DatabaseManager.deleteBlacklistEntityByPackage(context, blacklistEntity.apppackage);
     }
 
+    /**
+     * Change last open date of an application in blacklsit
+     * @param context
+     * @param appInfo
+     * @param openDate
+     */
     public void setBlacklistAppOpenDate(Context context, AppInfo appInfo, long openDate) {
         DatabaseManager.updateBlacklistEntityOpenDate(context, appInfo.getPpackage(), openDate);
     }

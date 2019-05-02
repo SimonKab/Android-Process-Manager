@@ -17,7 +17,17 @@ public abstract class LocalDatabase extends RoomDatabase {
 
     private static final String DATABASE_NAME = "TaskManagerDatabase";
 
+    /**
+     * Provider for working with snapshots of terminal.
+     * See {@link TerminalSnapshotEntity} for more details
+     * @return
+     */
     public abstract TerminalSnapshotProvider terminalSnapshotProvider();
+    /**
+     * Provider for working with blacklist entries.
+     * See {@link BlacklistEntity} for more details
+     * @return
+     */
     public abstract BlacklistProvider blacklistProvider();
 
     public static LocalDatabase getInstance(final Context context) {
