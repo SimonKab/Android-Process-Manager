@@ -10,8 +10,16 @@ import com.simonk.projects.taskmanager.entity.ProcessInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository for process management. Works mainly with system's API
+ *
+ */
 public class ProcessRepository {
 
+    /**
+     * @param context
+     * @return all currently running processes
+     */
     public List<ProcessInfo> getAllProcessInfo(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
@@ -45,6 +53,12 @@ public class ProcessRepository {
         return processInfoList;
     }
 
+    /**
+     * @param context
+     * @param packageName
+     * @return return process info for corresponding package
+     * or null if there is not application or application is not running
+     */
     public ProcessInfo getRunningProcessInfoForPackage(Context context, String packageName) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
@@ -79,6 +93,17 @@ public class ProcessRepository {
         return null;
     }
 
+    /**
+     * Kill process.
+     *
+     * Important: there is not guarantee that process will be destroyed actually.
+     * It only sends kill signals
+     *
+     * Since there is not root permissions on device foreground process will never be killed
+     *
+     * @param context
+     * @param processInfo
+     */
     public void killProcess(Context context, ProcessInfo processInfo) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
@@ -87,6 +112,15 @@ public class ProcessRepository {
         activityManager.killBackgroundProcesses(processInfo.getPpackage());
     }
 
+    /**
+     * Tries to change process priority
+     *
+     * Important: there is not guarantee that process will accept new priority.
+     *
+     * @param context
+     * @param processInfo
+     * @param priority
+     */
     public void changeProcessPriority(Context context, ProcessInfo processInfo, int priority) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos
@@ -98,6 +132,16 @@ public class ProcessRepository {
         }
     }
 
+    /**
+     * Kill processes as much as possible
+     *
+     * Important: there is not guarantee that process will be destroyed actually.
+     * It only sends kill signals
+     *
+     * Since there is not root permissions on device foreground process will never be killed
+     *
+     * @param context
+     */
     public void killAllProcesses(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos

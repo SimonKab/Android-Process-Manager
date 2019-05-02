@@ -78,12 +78,12 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
         }
         if (viewType == BLACK_LABEL_ITEM_TYPE) {
             TextView label = (TextView) inflater.inflate(R.layout.blacklist_item_label, parent, false);
-            label.setText("Blacklist:");
+            label.setText(parent.getResources().getString(R.string.blacklist_label));
             return new LabelViewHolder(label);
         }
         if (viewType == ALL_LABEL_ITEM_TYPE) {
             TextView label = (TextView) inflater.inflate(R.layout.blacklist_item_label, parent, false);
-            label.setText("All apps:");
+            label.setText(parent.getResources().getString(R.string.all_apps_label));
             return new LabelViewHolder(label);
         }
         return null;
@@ -170,14 +170,14 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
             mImage.setImageDrawable(info.getImage());
             mPackage.setText(info.getPpackage());
             if (info.isInBlacklist()) {
-                mActionButton.setText("Remove");
+                mActionButton.setText(itemView.getResources().getString(R.string.remove));
                 mActionButton.setOnClickListener((v) -> {
                     if (mOnBlockListener != null) {
                         mOnBlockListener.onRemove(mItem);
                     }
                 });
             } else {
-                mActionButton.setText("Block");
+                mActionButton.setText(itemView.getResources().getString(R.string.block));
                 mActionButton.setOnClickListener((v) -> {
                     if (mOnBlockListener != null) {
                         mOnBlockListener.onBlock(mItem);
@@ -189,7 +189,7 @@ public class BlackListAdapter extends ObjectListAdapter<BlackListAdapter.Adapter
                 calendar.setTimeInMillis(info.getLastOpenDate());
                 String date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(calendar.getTime());
                 mLastOpenDate.setVisibility(View.VISIBLE);
-                mLastOpenDate.setText("Last open date: " + date);
+                mLastOpenDate.setText(itemView.getResources().getString(R.string.last_open_date, date));
             } else {
                 mLastOpenDate.setVisibility(View.GONE);
             }

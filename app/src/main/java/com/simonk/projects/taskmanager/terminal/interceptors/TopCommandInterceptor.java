@@ -4,6 +4,10 @@ import com.simonk.projects.taskmanager.entity.TerminalCall;
 import com.simonk.projects.taskmanager.terminal.Terminal;
 import com.simonk.projects.taskmanager.terminal.TerminalService;
 
+/**
+ * Interceptor read data and represents it as string.
+ * When it faces special separator it sends whole data up to previous separator to listener
+ */
 public class TopCommandInterceptor implements TerminalRequestInterceptor {
 
     private static final String COMMAND = "top";

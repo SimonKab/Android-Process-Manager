@@ -4,6 +4,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
+/**
+ * POJO represents terminal call. Contains request to terminal and different streams of corresponding response
+ */
 public class TerminalCall {
 
     private String request;
@@ -13,6 +16,9 @@ public class TerminalCall {
 
     private InputStream inputStream;
 
+    /**
+     * @return request to terminal. Additionally trim output
+     */
     public String getRequest() {
         return request.trim();
     }
@@ -29,10 +35,18 @@ public class TerminalCall {
         return process;
     }
 
+    /**
+     * By default input stream will be retrieved from Process object supplied by setProcess method
+     * But you can explicitly set input stream which will have bigger priority than process's one
+     * @param inputStream
+     */
     public void setResponseInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
+    /**
+     * @return input stream provided by setResponseInputStream or input stream retrieved from Process
+     */
     public InputStream getResponseInputStream() {
         return inputStream == null
                 ? (process == null ? null : process.getInputStream())

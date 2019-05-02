@@ -35,6 +35,7 @@ public class BlacklistViewModel extends AndroidViewModel {
         mAllAppsInfo.setValue(mRepository.getAllInstalledApplicationsInfo(application, true));
         mBlacklistInfo = mRepository.getAllBlacklistApplicationInfo(application);
 
+        // important: appsInfo initialization must be after allAppsInfo and blacklistInfo initialization
         mAppsInfo = new MediatorLiveData<>();
         mAppsInfo.addSource(mAllAppsInfo, value -> {
             AppsInfoList appsInfoList = mAppsInfo.getValue();

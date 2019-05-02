@@ -15,7 +15,8 @@
                 android:id="@+id/terminal_clear_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Clear"
+                android:text="@string/clear"
+                android:layout_marginEnd="8dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:textColor="@color/colorPrimary"
                 android:layout_gravity="end"/>
@@ -24,7 +25,8 @@
                 android:id="@+id/terminal_stop_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Stop"
+                android:text="@string/stop"
+                android:layout_marginEnd="8dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:textColor="@color/colorPrimary" />
 

@@ -41,13 +41,13 @@ public class CleanedDialog extends DialogFragment {
 
         ActivityManager.MemoryInfo memInfo = MemoryUtils.getMemoryInfo(requireContext());
         float beforeAvailMemory = MemoryUtils.getAvailableMemory(memInfo);
-        ((TextView)root.findViewById(R.id.before_memory)).setText("Before cleaning: " + beforeAvailMemory + "G");
+        ((TextView)root.findViewById(R.id.before_memory)).setText(getString(R.string.before_cleaning, beforeAvailMemory));
 
         new ProcessRepository().killAllProcesses(requireContext());
 
         memInfo = MemoryUtils.getMemoryInfo(requireContext());
         float afterAvailMemory = MemoryUtils.getAvailableMemory(memInfo);
-        ((TextView)root.findViewById(R.id.after_memory)).setText("After cleaning: " + afterAvailMemory + "G");
+        ((TextView)root.findViewById(R.id.after_memory)).setText(getString(R.string.after_cleaning, afterAvailMemory));
 
         ((TextView)root.findViewById(R.id.percent_memory)).setText((100 - ((int)(beforeAvailMemory * 100 / afterAvailMemory))) + "%");
 

@@ -5,6 +5,9 @@ import android.graphics.drawable.Drawable;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * POJO represents usefull for this app information about a running process
+ */
 public class ProcessInfo implements Serializable {
     private String text;
     private Drawable image;

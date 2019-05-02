@@ -64,11 +64,11 @@ public class ProcessFragment extends Fragment
                 ViewGroup detailsView = (ViewGroup)
                         LayoutInflater.from(requireContext()).inflate(R.layout.process_list_item_details, null);
                 if (((FrameLayout) v.findViewById(R.id.process_list_item_details)).getChildCount() == 0) {
-                    ((TextView) detailsView.findViewById(R.id.priority)).setText("Priority: " + info.getPriority());
-                    ((TextView) detailsView.findViewById(R.id.status)).setText("Enabled: " + info.isStatus());
-                    ((TextView) detailsView.findViewById(R.id.uid)).setText("Uid: " + info.getUid());
-                    ((TextView) detailsView.findViewById(R.id.min_sdk)).setText("Target sdk: " + info.getMinSdk());
-                    ((TextView) detailsView.findViewById(R.id.description)).setText("Description: " + info.getDescription());
+                    ((TextView) detailsView.findViewById(R.id.priority)).setText(getString(R.string.priority, String.valueOf(info.getPriority())));
+                    ((TextView) detailsView.findViewById(R.id.status)).setText(getString(R.string.enabled, String.valueOf(info.isStatus())));
+                    ((TextView) detailsView.findViewById(R.id.uid)).setText(getString(R.string.uid, String.valueOf(info.isStatus())));
+                    ((TextView) detailsView.findViewById(R.id.min_sdk)).setText(getString(R.string.target_sdk, String.valueOf(info.getMinSdk())));
+                    ((TextView) detailsView.findViewById(R.id.description)).setText(getString(R.string.description, info.getDescription()));
                     ((FrameLayout) v.findViewById(R.id.process_list_item_details)).addView(detailsView);
                     ((Button) detailsView.findViewById(R.id.kill)).setOnClickListener(new View.OnClickListener() {
                         @Override

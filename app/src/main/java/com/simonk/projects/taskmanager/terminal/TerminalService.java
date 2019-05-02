@@ -19,6 +19,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Performs async requests to terminal. Retrieve data from terminal and dispatch it to TerminalListener
+ */
 public class TerminalService {
 
     private static final int BUFFER_SIZE = 4096;
@@ -59,6 +62,11 @@ public class TerminalService {
         mInterceptors.add(new TopCommandInterceptor());
     }
 
+    /**
+     * Make async terminal request
+     * @param terminalCall
+     * @param terminalListener
+     */
     @MainThread
     public void makeTerminalRequest(TerminalCall terminalCall, TerminalListener terminalListener) {
         mTerminalListener = terminalListener;
@@ -70,6 +78,9 @@ public class TerminalService {
 
     }
 
+    /**
+     * Stops currently running terminal request
+     */
     @MainThread public void stopTerminalRequest() {
         mTerminated = true;
     }
@@ -244,6 +255,9 @@ public class TerminalService {
         BUFFER = new byte[BUFFER_SIZE];
     }
 
+    /**
+     * Handler to send information in background service thread
+     */
     private static class TerminalHandler extends Handler {
         private final TerminalService service;
 
@@ -265,6 +279,9 @@ public class TerminalService {
         }
     }
 
+    /**
+     * Handler to send information in main ui thread
+     */
     private static class MainThreadHandler extends Handler {
         private final TerminalService service;
 

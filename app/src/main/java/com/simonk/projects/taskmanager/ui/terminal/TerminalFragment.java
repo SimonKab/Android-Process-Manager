@@ -42,6 +42,9 @@ public class TerminalFragment extends Fragment {
 
     private TerminalViewModel mViewModel;
 
+    /*
+    In some cases (like app start) we dont want to request a focus to not show keyboard when it's wrong time
+     */
     private boolean mCanRequestFocus = true;
 
     public static TerminalFragment newInstance() {
@@ -68,6 +71,10 @@ public class TerminalFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Notify fragment that it became to primari in pager
+     * @param current
+     */
     public void setCurrent(boolean current) {
         mCanRequestFocus = current;
     }

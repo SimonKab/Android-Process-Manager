@@ -22,6 +22,10 @@ import com.simonk.projects.taskmanager.ui.MainActivity;
 
 import java.util.List;
 
+/**
+ * Background service for blacklist. Tries to remove users process if the process is in blacklist
+ * Send notification to user if blocked process was found running
+ */
 public class BlacklistJobService extends JobService {
 
     @Override
@@ -54,6 +58,11 @@ public class BlacklistJobService extends JobService {
         return true;
     }
 
+    /**
+     * Notify user about running blocked app. Priority is set to high and sound is on
+     * so notification will be shown on top of all other apps
+     * @param appInfo
+     */
     private void notifyUser(AppInfo appInfo) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -62,10 +71,10 @@ public class BlacklistJobService extends JobService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.ic_launcher_background)
                 .setColor(getResources().getColor(R.color.colorPrimary))
-                .setContentTitle("Blacklist application is running!")
+                .setContentTitle(getApplicationContext().getString(R.string.notify_title))
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .setContentText(String.format("Application with name %s is running but it's not should be", appInfo.getText()))
+                .setContentText(String.format(getApplicationContext().getString(R.string.notify_content), appInfo.getText()))
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_MAX);
 

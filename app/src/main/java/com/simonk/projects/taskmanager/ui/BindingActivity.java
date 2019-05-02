@@ -5,6 +5,9 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ViewDataBinding;
 
+/**
+ * Simple activity to support binding
+ */
 public abstract class BindingActivity extends AppCompatActivity {
 
     private ViewDataBinding mBinding;
@@ -19,8 +22,16 @@ public abstract class BindingActivity extends AppCompatActivity {
         setContentView(mBinding.getRoot());
     }
 
+    /**
+     * Child must implement this method to retrieve corresponding binding
+     * @return
+     */
     protected abstract ViewDataBinding initBinding();
 
+    /**
+     * Child can override this method to specify binding subclass it want
+     * @return
+     */
     public ViewDataBinding getBinding() {
         return mBinding;
     }
