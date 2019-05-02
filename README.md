@@ -22,3 +22,14 @@ But if you wanna work with processes and apps like a pro, you can use terminal a
 ### Languages supported:
 * English
 * Russian
+
+### Screenshots:
+<p align="center">
+  <img src="screenshots/apps.png" width="300">
+</p>
+<p align="center">
+  <img src="screenshots/blacklist.png" width="300">
+</p>
+<p align="center">
+  <img src="screenshots/terminal.png" width="300">
+</p>
