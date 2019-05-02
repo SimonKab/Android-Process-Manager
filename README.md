@@ -33,3 +33,5 @@ But if you wanna work with processes and apps like a pro, you can use terminal a
 <p align="center">
   <img src="screenshots/terminal.png" width="300">
 </p>
+
+#### Check STATUS.md to see tasks and progress :)
