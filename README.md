@@ -18,3 +18,7 @@ But if you wanna work with processes and apps like a pro, you can use terminal a
 * Show notification with scary message when blocked app is running
 * Show last time blocked app was opened (for parental control, yeah)
 * Let you work with Android shell
+
+### Languages supported:
+* English
+* Russian
