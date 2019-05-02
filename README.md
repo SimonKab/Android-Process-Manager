@@ -14,7 +14,7 @@ But if you wanna work with processes and apps like a pro, you can use terminal a
 * Show additional information about process
 * Show all installed (and not system) apps
 * Add apps in blacklist
-* Removes apps from blacklist in background while you sleep
+* Stop background processes of applications that were added to blacklist
 * Show notification with scary message when blocked app is running
 * Show last time blocked app was opened (for parental control, yeah)
 * Let you work with Android shell
