@@ -17,4 +17,4 @@
 | Terminal. Database | Add history to temrinal. Save history in database to let user see previous commands. Also let user tap on previous command to reuse it | 01.05 | 27.04 |
 | Terminal. Database | Add history to temrinal. Save history in database to let user see previous commands. Also let user tap on previous command to reuse it | 01.05 | 27.04 |
 | Localization. Russion. English | Add localization to app: russian, english |  03.05 | 01.05 |
-| Process and blacklist multithreading | Add advanced multithreading to repositories, make database manager work with thread pool executor |  15.05 | in progress |
+| Process and blacklist multithreading | Add advanced multithreading to repositories, make database manager work with thread pool executor |  15.05 | <span style="color:green">in progress</span> |
